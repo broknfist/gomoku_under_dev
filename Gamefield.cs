@@ -212,11 +212,48 @@ namespace gomoku
 				//***új bejárás a jobb átlónak!*********
 			}
 			int count_right_diagonal_x=0,count_right_diagonal_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					count_right_diagonal_x=0;
-					count_right_diagonal_o=0;
+			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
+				for (int j = 0; j <= k;  j++) {
+					//count_right_diagonal_x=0;
+					//count_right_diagonal_o=0;
 					//right diagonal
+					int i =k-j;
+					if (i<sorSzam && j<oszlopSzam) {
+						if (palya[i,j]==1) {
+							count_right_diagonal_x++;
+							if (count_right_diagonal_x>4) {
+							there_is_a_winner=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_x=0;
+						}
+						if (palya[i,j]==2) {
+							count_right_diagonal_o++;
+							if (count_right_diagonal_o>4) {
+							there_is_a_winner=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_o=0;
+						}
+					}
+					
+					/*
+					stack overflow loop diagonally trough two dimensional array
+					one solution:
+					    for( int k = 0 ; k <= WIDTH + HEIGHT - 2; k++ ) {
+					        for( int j = 0 ; j <= k ; j++ ) {
+					            int i = k - j;
+					            if( i < HEIGHT && j < WIDTH ) {
+					                System.out.print( array[i][j] + " " );
+					            }
+					        }
+					        System.out.println();
+					    }
+					*/
+					
+					/*
 					if (i+j>=sorSzam) {
 						temp_row=sorSzam;
 						temp_col=i+j-sorSzam;
@@ -245,7 +282,8 @@ namespace gomoku
 						}
 						temp_row++;
 						temp_col++;				
-					}		
+					}
+					*/		
 				}
 			}
 			if (there_is_a_winner) {
