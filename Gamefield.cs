@@ -174,9 +174,10 @@ namespace gomoku
 						temp_col++;				
 					}				
 					//***********right diagonal**************
-					//**********ez a rész itt még mindig hibás!!!!****
+					//**********ez a rész itt még mindig hibás!!!!****lehet ki kéne szedni a bal átlós ciklusból!!!!
 					//count_diagonal_x=0;
 					//count_diagonal_o=0;
+					/*
 					if (i+j>=sorSzam) {
 						temp_row=sorSzam;
 						temp_col=i+j-sorSzam;
@@ -205,7 +206,46 @@ namespace gomoku
 						}			
 						temp_row++;
 						temp_col--;				
-					}				
+					}
+					*/				
+				}
+				//***új bejárás a jobb átlónak!*********
+			}
+			int count_right_diagonal_x=0,count_right_diagonal_o=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					count_right_diagonal_x=0;
+					count_right_diagonal_o=0;
+					//right diagonal
+					if (i+j>=sorSzam) {
+						temp_row=sorSzam;
+						temp_col=i+j-sorSzam;
+					} else {
+						temp_row=i+j-sorSzam;
+						temp_col=sorSzam;
+					}
+					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
+						if (palya[temp_row,temp_col]==1) {
+							count_right_diagonal_x++;
+							if (count_right_diagonal_x>4) {
+							there_is_a_winner=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_x=0;
+						}
+						if (palya[temp_row,temp_col]==2) {
+							count_right_diagonal_o++;
+							if (count_right_diagonal_o>4) {
+							there_is_a_winner=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_o=0;
+						}
+						temp_row++;
+						temp_col++;				
+					}		
 				}
 			}
 			if (there_is_a_winner) {
