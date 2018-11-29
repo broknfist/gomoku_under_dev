@@ -81,7 +81,7 @@ namespace gomoku
 				turn_count++;
 			}			
 			checkForWinner();
-			//implement 
+			//implement performclick button, ha make_a_move() visszatér egy jó lépéssel!!!
 		}
 		private void checkForWinner(){
 			bool there_is_a_winner=false;	
@@ -161,11 +161,22 @@ namespace gomoku
 						} else {
 							count_diagonal_x=0;
 						}
+						if (palya[temp_row,temp_col]==2) {
+							count_diagonal_o++;
+							if (count_diagonal_o>4) {
+							there_is_a_winner=true;
+							break;
+							}
+						} else {
+							count_diagonal_o=0;
+						}
 						temp_row++;
 						temp_col++;				
 					}				
 					//***********right diagonal**************
-					count_diagonal_x=0;
+					//**********ez a rész itt még mindig hibás!!!!****
+					//count_diagonal_x=0;
+					//count_diagonal_o=0;
 					if (i+j>=sorSzam) {
 						temp_row=sorSzam;
 						temp_col=i+j-sorSzam;
