@@ -249,7 +249,7 @@ namespace gomoku
 				count_vertical_x=0;
 				count_vertical_o=0;
 			}
-			//***********átló vizsgálat**********************		Hibás!!!!
+			//***********átló vizsgálat**********************
 			int temp_row,temp_col;
 			int count_left_diagonal_x=0,count_left_diagonal_o=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -284,11 +284,11 @@ namespace gomoku
 						temp_col++;
 					}
 					count_left_diagonal_x=0;	//ez a sarkok miatt kell
-					count_left_diagonal_o=0;	//még át kell gondolni miért, de működik
+					count_left_diagonal_o=0;	
 				}
 			}
 			
-			//másik átló  //már csak ez a szar!
+			//másik átló
 			
 			
 			int count_right_diagonal_x=0,count_right_diagonal_o=0;
@@ -301,7 +301,7 @@ namespace gomoku
 						temp_row=0;
 						temp_col=j-i;
 					}
-					while (temp_row!=sorSzam && temp_col!=0) {
+					while (temp_row!=sorSzam && temp_col!=-1) {
 						if (palya[temp_row,temp_col]==1) {
 							count_right_diagonal_x++;
 							if (count_right_diagonal_x>4) {
@@ -323,8 +323,8 @@ namespace gomoku
 						temp_row++;
 						temp_col--;
 					}
-					//count_right_diagonal_x=0;	//ez a sarkok miatt kell
-					//count_right_diagonal_o=0;	//még át kell gondolni miért, de működik
+					count_right_diagonal_x=0;	//ez a sarkok miatt kell
+					count_right_diagonal_o=0;	
 				}
 			}
 			
@@ -398,22 +398,33 @@ namespace gomoku
 				}
 			}
 			*/
-			
-			
-			
-			
+						
 			//győztes megnevezése
 			if (there_is_a_winner) {
 				String winner="";
 				if (x_or_not) {
 					winner="O";
+					//Reset_Board();
 				}else{
 					winner="X";
 				}
 				MessageBox.Show(winner+" nyert!","Hurrá!");
-			}else{	//Kell ez?, jó ez?, később átgondolni
+				Reset_Board();
+			}else{
 				if (turn_count==sorSzam*oszlopSzam) {
 					MessageBox.Show("Döntetlen!","Nesze!");
+					Reset_Board();
+				}
+			}
+		}
+		private void Reset_Board(){
+			foreach (Grid gr in mainwindow.Board.Children) {
+				foreach (Button bt in gr.Children) {
+					bt.Content="";
+					palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=0;
+					x_or_not=true;
+					turn_count=0;
+					bt.IsEnabled=true;
 				}
 			}
 		}
