@@ -295,13 +295,13 @@ namespace gomoku
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (i>j) {
-						temp_row=i-j;
+						temp_row=i-j;	//itt kell matatnni valamit, a jobb főátló alatti részt nem vizsgálja meg!!!
 						temp_col=0;
 					} else {
 						temp_row=0;
-						temp_col=j-i;
+						temp_col=j-i;	//itt kell matatnni valamit, a jobb főátló alatti részt nem vizsgálja meg!!!
 					}
-					while (temp_row!=sorSzam && temp_col!=-1) {
+					while (temp_row!=sorSzam && temp_col!=-1) {		//a második feltétel miatt járja csak be a jobb főátló feletti részt!
 						if (palya[temp_row,temp_col]==1) {
 							count_right_diagonal_x++;
 							if (count_right_diagonal_x>4) {
