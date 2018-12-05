@@ -79,6 +79,8 @@ namespace gomoku
 		}
 		private void buttonClick(object sender,RoutedEventArgs e){
 			Button gridButton=(Button)sender;
+			int rand_x,rand_y;
+			Random vsz=new Random();
 			if (x_or_not) {
 				gridButton.IsEnabled=false;
 				palya[Grid.GetRow(gridButton),Grid.GetColumn(gridButton)]=1;
@@ -86,9 +88,17 @@ namespace gomoku
 				x_or_not=false;
 				turn_count++;
 				checkForWinner();
+				rand_x=vsz.Next(sorSzam);
+				rand_y=vsz.Next(oszlopSzam);
+				while (palya[rand_x,rand_y]!=0) {
+					rand_x=vsz.Next(sorSzam);
+					rand_y=vsz.Next(oszlopSzam);
+				}
+				
 				foreach (Grid gr in mainwindow.Board.Children) {
 					foreach (Button bt in gr.Children) {
-						if (bt.IsEnabled){
+						//if (bt.IsEnabled && Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
+						if (Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
 							
 							bt.Content="O";
 							palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
@@ -418,12 +428,13 @@ namespace gomoku
 			}
 		}
 		private void Reset_Board(){
+			turn_count=0;
 			foreach (Grid gr in mainwindow.Board.Children) {
 				foreach (Button bt in gr.Children) {
 					bt.Content="";
 					palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=0;
-					x_or_not=true;
-					turn_count=0;
+					//x_or_not=true;
+					
 					bt.IsEnabled=true;
 				}
 			}
