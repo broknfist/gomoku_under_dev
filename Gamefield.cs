@@ -89,7 +89,9 @@ namespace gomoku
 				turn_count++;
 				checkForWinner();
 				//Random lépés a gépnek
-				Random_Move(gridButton);
+				//Random_Move(gridButton);
+				//ButtonPressDownByKoord(0,turn_count/2); //Mechanical Test
+				make_move(gridButton);
 				checkForWinner();
 			}else{
  				//Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
@@ -136,16 +138,19 @@ namespace gomoku
 					}
 				} while (rand_x>=sorSzam || rand_x<0 || rand_y>=oszlopSzam || rand_y<0);
 			} while (palya[rand_x,rand_y]!=0);
-			//if(x_or_not) else ágban Player 2
+			ButtonPressDownByKoord(rand_x,rand_y);
+			//mechanical test: ButtonPressDownByKoord(0,0);
+		}
+		
+		private void ButtonPressDownByKoord(int x_koord, int y_koord){
 			foreach (Grid gr in mainwindow.Board.Children) {
 				foreach (Button bt in gr.Children) {
-					if (Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
+					if (Grid.GetRow(bt)==x_koord && Grid.GetColumn(bt)==y_koord){
 						
 						bt.Content="O";
 						palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
 						x_or_not=true;
 						turn_count++;
-						//gridButton.PerformClick(); or bt.PerformClick, ha két játékos lenne;
 						bt.IsEnabled=false;
 						break;
 					}
@@ -153,7 +158,43 @@ namespace gomoku
 			}
 		}
 		
-		private void make_move(){
+		private bool NotOutOfRange(groupMark is_it_out){
+			bool notoutofrange=false;
+			return notoutofrange;
+		}
+		
+		private void make_move(Button player_pressed){
+			groupMark best_move=new groupMark();
+			groupMark seek_move=new groupMark();
+			best_move.found=false;
+			
+			//1
+			seek_move=seekGroups(2,4);
+			if (seek_move.found) {
+				switch (seek_move.direction) {
+						case "horizontal":{
+							if (seek_move.end_y<oszlopSzam) {
+								if (seek_move.end_y!=oszlopSzam-1) {
+									if (palya[seek_move.end_x,seek_move.end_y+1]==0) {		//te jó ég, mi ez? ennek sokkal egyszerűbbnek kéne látszani. Nehezen olvasható
+										best_move=seek_move;								//csak egy egyszerű pályaszél vizsgálat 
+										best_move.end_y++;									//NotOutOfRange() !!!
+									}
+								}
+							}
+							break;
+						}
+						case "vertical":{
+							break;
+						}
+						case "leftdiagonal":{
+							break;
+						}
+						case "rightdiagonal":{
+							break;
+						}
+						
+				}
+			}
 			
 			//1: win
 			//2: block enemy win
@@ -191,6 +232,12 @@ namespace gomoku
 			    button1.RaiseEvent(newEventArgs);         
 			}
 			*/
+			//**********10: Random
+			if (!best_move.found) {
+				Random_Move(player_pressed);
+			}
+			
+			
 		}	
 		
 		struct groupMark{
@@ -325,7 +372,7 @@ namespace gomoku
 					Reset_Board();
 				} 	
 			}
-			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {
+			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {	//Ha a gép normálisan játszana, elvieleg erre itt nem lenne szükség
 				MessageBox.Show("Döntetlen!","Nesze!");
 				Reset_Board();
 			}	
