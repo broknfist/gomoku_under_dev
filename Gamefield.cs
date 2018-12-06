@@ -139,7 +139,6 @@ namespace gomoku
 			//if(x_or_not) else ágban Player 2
 			foreach (Grid gr in mainwindow.Board.Children) {
 				foreach (Button bt in gr.Children) {
-					//if (bt.IsEnabled && Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
 					if (Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
 						
 						bt.Content="O";
@@ -192,20 +191,16 @@ namespace gomoku
 			    button1.RaiseEvent(newEventArgs);         
 			}
 			*/
-			
-			
-			
-			
-		}
+		}	
 		
-		struct group{
+		struct groupMark{
 			public int start_x,start_y,end_x,end_y;
 			public bool found;
 			public string direction;
 		}
-		
-		private group seekGroups(int search_what, int times){
-			group csopi=new group();
+
+		private groupMark seekGroups(int search_what, int times){
+			groupMark csopi=new groupMark();
 			csopi.found=false;
 			//*************horizontal**********
 			int count_horizontal_what=0;
@@ -213,11 +208,11 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[i,j]==search_what) {
 						count_horizontal_what++;
-						if (count_horizontal_what==1) {
+						if (count_horizontal_what==search_what) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 						}
-						if (count_horizontal_what>times) {
+						if (count_horizontal_what>=times) {
 							csopi.found=true;
 							csopi.end_x=i;
 							csopi.end_y=j;
@@ -231,34 +226,31 @@ namespace gomoku
 				count_horizontal_what=0;
 			}			
 			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************			
-			int count_vertical_x=0,count_vertical_o=0;
+			int count_vertical_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[j,i]==1) {			//csak szimmetrikus táblára jó!!!!!
-						count_vertical_x++;
-						if (count_vertical_x>4) {
+					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
+						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
+						if (count_horizontal_what==search_what) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+						}
+						if (count_vertical_what>=times) {
 							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="vertical";
 							break;
 						}
 					} else {
-						count_vertical_x=0;
-					}
-					if (palya[j,i]==2) {
-						count_vertical_o++;
-						if (count_vertical_o>4) {
-							csopi.found=true;
-							break;
-						}
-					} else {
-						count_vertical_o=0;
-					}					
+						count_vertical_what=0;
+					}			
 				}
-				count_vertical_x=0;
-				count_vertical_o=0;
+				count_vertical_what=0;
 			}
 			//***********átló vizsgálat**********************
 			int temp_row,temp_col;
-			int count_left_diagonal_x=0,count_left_diagonal_o=0;
+			int count_left_diagonal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (i>j) {
@@ -269,206 +261,76 @@ namespace gomoku
 						temp_col=j-i;
 					}
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
-						if (palya[temp_row,temp_col]==1) {
-							count_left_diagonal_x++;
-							if (count_left_diagonal_x>4) {
+						if (palya[temp_row,temp_col]==search_what) {
+							count_left_diagonal_what++;
+							if (count_horizontal_what==search_what) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+							}
+							if (count_left_diagonal_what>=times) {
 							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="leftdiagonal";
 							break;
 							}
 						} else {
-							count_left_diagonal_x=0;
+							count_left_diagonal_what=0;
 						}
-						if (palya[temp_row,temp_col]==2) {
-							count_left_diagonal_o++;
-							if (count_left_diagonal_o>4) {
-							csopi.found=true;
-							break;
-							}
-						} else {
-							count_left_diagonal_o=0;
-						}
-						temp_row++;
 						temp_col++;
 					}
-					count_left_diagonal_x=0;	//fontos
-					count_left_diagonal_o=0;	
+					count_left_diagonal_what=0;
 				}
 			}
 			//***********right diagonal*******************
-			int count_right_diagonal_x=0,count_right_diagonal_o=0;
+			int count_right_diagonal_what=0;
 			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
 				for (int j = 0; j <= k;  j++) {
 					int i = k-j;
 					if (i<sorSzam && j<oszlopSzam) {
-						if (palya[i,j]==1) {
-							count_right_diagonal_x++;
-							if (count_right_diagonal_x>4) {
+						if (palya[i,j]==search_what) {
+							count_right_diagonal_what++;
+							
+							if (count_right_diagonal_what>=times) {
 							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="rightdiagonal";
 							break;
 							}
 						} else {
-							count_right_diagonal_x=0;			
-						}
-						if (palya[i,j]==2) {
-							count_right_diagonal_o++;
-							if (count_right_diagonal_o>4) {
-							csopi.found=true;
-							break;
-							}
-						} else {
-							count_right_diagonal_o=0;
+							count_right_diagonal_what=0;			
 						}
 					}
 				}
-				count_right_diagonal_x=0;
-				count_right_diagonal_o=0;
+				count_right_diagonal_what=0;
 			}
-			
-			
-			
-			
-			
 			return csopi;
-		}
+		}	
 		
 		private void checkForWinner(){
-			bool there_is_a_winner=false;	
-			//**************sorok vizsgálta, hogy van -e nyertes?*****************
-			int count_horizontal_x=0,count_horizontal_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[i,j]==1) {
-						count_horizontal_x++;
-						if (count_horizontal_x>4) {
-							there_is_a_winner=true;
-							break;
-						}
-					} else {
-						count_horizontal_x=0;
-					}
-					if (palya[i,j]==2) {
-						count_horizontal_o++;
-						if (count_horizontal_o>4) {
-							there_is_a_winner=true;
-							break;
-						}
-					} else {
-						count_horizontal_o=0;
-					}				
-				}
-				count_horizontal_x=0;
-				count_horizontal_o=0;
-			}			
-			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************			
-			int count_vertical_x=0,count_vertical_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[j,i]==1) {			//csak szimmetrikus táblára jó!!!!!
-						count_vertical_x++;
-						if (count_vertical_x>4) {
-							there_is_a_winner=true;
-							break;
-						}
-					} else {
-						count_vertical_x=0;
-					}
-					if (palya[j,i]==2) {
-						count_vertical_o++;
-						if (count_vertical_o>4) {
-							there_is_a_winner=true;
-							break;
-						}
-					} else {
-						count_vertical_o=0;
-					}					
-				}
-				count_vertical_x=0;
-				count_vertical_o=0;
-			}
-			//***********átló vizsgálat**********************
-			int temp_row,temp_col;
-			int count_left_diagonal_x=0,count_left_diagonal_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					if (i>j) {
-						temp_row=i-j;
-						temp_col=0;
-					} else {
-						temp_row=0;
-						temp_col=j-i;
-					}
-					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
-						if (palya[temp_row,temp_col]==1) {
-							count_left_diagonal_x++;
-							if (count_left_diagonal_x>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_left_diagonal_x=0;
-						}
-						if (palya[temp_row,temp_col]==2) {
-							count_left_diagonal_o++;
-							if (count_left_diagonal_o>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_left_diagonal_o=0;
-						}
-						temp_row++;
-						temp_col++;
-					}
-					count_left_diagonal_x=0;	//fontos
-					count_left_diagonal_o=0;	
-				}
-			}
-			//***********right diagonal*******************
-			int count_right_diagonal_x=0,count_right_diagonal_o=0;
-			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
-				for (int j = 0; j <= k;  j++) {
-					int i = k-j;
-					if (i<sorSzam && j<oszlopSzam) {
-						if (palya[i,j]==1) {
-							count_right_diagonal_x++;
-							if (count_right_diagonal_x>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_right_diagonal_x=0;			
-						}
-						if (palya[i,j]==2) {
-							count_right_diagonal_o++;
-							if (count_right_diagonal_o>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_right_diagonal_o=0;
-						}
-					}
-				}
-				count_right_diagonal_x=0;
-				count_right_diagonal_o=0;
-			}								
-			//győztes megnevezése
-			if (there_is_a_winner) {
-				String winner="";
-				if (x_or_not) {
-					winner="O";
-				}else{
-					winner="X";
-				}
-				MessageBox.Show(winner+" nyert!","Hurrá!");
+			groupMark winning_group=new groupMark();
+			winning_group.found=false;
+			//itt volt a win seek...
+			winning_group=seekGroups(1,5);
+			if (winning_group.found) {
+				String winner="X"; //itt átrendezésre szorul, mert átalakítottam a keresést
+				MessageBox.Show(winner+" nyert!","Hurrá!");		//ezt itt hamarabb is meg lehet vizsgálni, rögtön X lépése után. Holnapra is kell valami
 				Reset_Board();
-			}else{
-				if (turn_count==sorSzam*oszlopSzam) {
-					MessageBox.Show("Döntetlen!","Nesze!");
+			} else {
+				winning_group=seekGroups(2,5);
+				if (winning_group.found) {
+					String winner="O";
+					MessageBox.Show(winner+" nyert!","Hurrá!");		//hát, elég nehéz rávenni a gépet, hogy nyerjen, holnap muszáj lesz már kicsit javítani rajta!!!
 					Reset_Board();
-				}
+				} 	
 			}
+			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {
+				MessageBox.Show("Döntetlen!","Nesze!");
+				Reset_Board();
+			}	
 		}
+		
 		private void Reset_Board(){
 			turn_count=0;
 			foreach (Grid gr in mainwindow.Board.Children) {
