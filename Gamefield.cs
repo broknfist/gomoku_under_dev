@@ -50,9 +50,10 @@ namespace gomoku
 			Start();
 		}
 		private void Start(){
-			ButtonGrid();
+			//SeekMove move=new SeekMove(this???,15,15,palya);
+			BoardBirth();
 		}
-		private void ButtonGrid(){
+		private void BoardBirth(){
 			Grid buttongrid=new Grid();
 			for (int i = 0; i < oszlopSzam; i++) {
 				ColumnDefinition aktcol=new ColumnDefinition();
@@ -70,7 +71,7 @@ namespace gomoku
 					gridButton.Name="CellBtn";
 					gridButton.Width=40;
 					gridButton.Height=40;
-					gridButton.Click+=buttonClick;
+					gridButton.Click+=cellClick;
 					buttongrid.Children.Add(gridButton);
 					Grid.SetRow(gridButton,i);
 					Grid.SetColumn(gridButton,j);
@@ -78,10 +79,8 @@ namespace gomoku
 			}
 			mainwindow.Board.Children.Add(buttongrid);
 		}
-		private void buttonClick(object sender,RoutedEventArgs e){
+		private void cellClick(object sender,RoutedEventArgs e){
 			Button gridButton=(Button)sender;
-			int rand_x,rand_y;
-			Random vsz=new Random();
 			if (x_or_not) {
 				gridButton.IsEnabled=false;
 				palya[Grid.GetRow(gridButton),Grid.GetColumn(gridButton)]=1;
@@ -89,76 +88,14 @@ namespace gomoku
 				x_or_not=false;
 				turn_count++;
 				checkForWinner();
-				int proximity_x=Grid.GetRow(gridButton);
-				int proximity_y=Grid.GetColumn(gridButton);
-				int interval_x=1;
-				int interval_y=1;
-				do {
-					do {
-						rand_x=proximity_x;
-						rand_y=proximity_y;
-						rand_x+=vsz.Next((-1)*interval_x,(interval_x+1));
-						rand_y+=vsz.Next((-1)*interval_y,(interval_y+1));
-						interval_x++;
-						if (interval_x>sorSzam) {
-							interval_x=1;
-						}
-						interval_y++;
-						if (interval_y>oszlopSzam) {
-							interval_y=1;
-						}
-					} while (rand_x>=sorSzam || rand_x<0 || rand_y>=oszlopSzam || rand_y<0);
-				} while (palya[rand_x,rand_y]!=0);
-				//nem nagyon kéne erőltetni a véletlenszámot, szélsőséges esetben végtelen ciklusba kerülhet!!!!!!	de tesztelésre jó lesz
-				//nem beszélve arról, hogy eredetileg itt a második játékos lépett, todo: visszacsinálni, választhatóvá tenni a playereket!
-				//azaz nem itt, hanem az if(x_or_not) else ágában, de mindegy
-				foreach (Grid gr in mainwindow.Board.Children) {
-					foreach (Button bt in gr.Children) {
-						//if (bt.IsEnabled && Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
-						if (Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
-							
-							bt.Content="O";
-							palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
-							x_or_not=true;
-							turn_count++;
-							//gridButton.PerformClick(); or bt.PerformClick, ha két játékos lenne;
-							bt.IsEnabled=false;
-							break;
-						}
-					}
-				}
+				//Random lépés a gépnek
+				Random_Move(gridButton);
 				checkForWinner();
 			}else{
-				/*
-			   foreach(UIElement child in grid.Children)  
-				   {  
-				      if(Grid.GetRow(child) == row  
-				            &&  
-				         Grid.GetColumn(child) == column)  
-				      {  
-				         return child;  
-				      }  
-				   }  
- 				*/
- 				/*
- 				 * Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
- 				*/
-				//gridButton.IsEnabled=false;
+ 				//Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
 			}			
 			//checkForWinner();
-			/*
-			if (x_or_not) {
-				Button btnRand=new Button();
-				Random vsz=new Random();
-				Grid.SetColumn(mainwindow.Board,1);
-				Grid.SetRow(mainwindow.Board,1);
-				btnRand=gridButton;
-				btnRand.PerformClick();
-					Ez valami régi szemét...
-			}
-			*/
 			//implement performclick button, ha make_a_move() visszatér egy jó lépéssel!!!
-			//Button btnOK=null;
 			/*
 			try{
 			foreach (Button c in mainwindow.Board.Children) {
@@ -176,6 +113,47 @@ namespace gomoku
 			//make_move();
 		}
 		
+		private void Random_Move(Button player_pressed){
+			Random vsz=new Random();
+			int rand_x,rand_y;
+			int proximity_x=Grid.GetRow(player_pressed);
+			int proximity_y=Grid.GetColumn(player_pressed);
+			int interval_x=1;
+			int interval_y=1;
+			do {
+				do {
+					rand_x=proximity_x;
+					rand_y=proximity_y;
+					rand_x+=vsz.Next((-1)*interval_x,(interval_x+1));
+					rand_y+=vsz.Next((-1)*interval_y,(interval_y+1));
+					interval_x++;
+					if (interval_x>sorSzam) {
+						interval_x=1;
+					}
+					interval_y++;
+					if (interval_y>oszlopSzam) {
+						interval_y=1;
+					}
+				} while (rand_x>=sorSzam || rand_x<0 || rand_y>=oszlopSzam || rand_y<0);
+			} while (palya[rand_x,rand_y]!=0);
+			//if(x_or_not) else ágban Player 2
+			foreach (Grid gr in mainwindow.Board.Children) {
+				foreach (Button bt in gr.Children) {
+					//if (bt.IsEnabled && Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
+					if (Grid.GetRow(bt)==rand_x && Grid.GetColumn(bt)==rand_y){
+						
+						bt.Content="O";
+						palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
+						x_or_not=true;
+						turn_count++;
+						//gridButton.PerformClick(); or bt.PerformClick, ha két játékos lenne;
+						bt.IsEnabled=false;
+						break;
+					}
+				}
+			}
+		}
+		
 		private void make_move(){
 			
 			//1: win
@@ -186,17 +164,8 @@ namespace gomoku
 			//     X
 			//	   X    és társai varázslatokat egyenlőre inkább hagyjuk
 			//
-			//1: ...ha O-nak 1 van és kirakhat ötöt, letenni mellé a másodikat
-			//6: random O-nak, lehetőleg x közelébe, na ez már megvan :D
-			
-			
-			//szemét, csak, hogy hogyan kéne leszervezni:
-			//Button btnOK=gridButton;
-			//Button btnOK=new Button();
-			//Random vsz=new Random();
-			//do{
-			//	Grid.SetColumn(mainwindow.Board,vsz.Next(0,16));
-			//	Grid.SetRow(mainwindow.Board,vsz.Next(0,16));	
+			//8: ...ha O-nak 1 van és kirakhat ötöt, letenni mellé a másodikat
+			//10: random O-nak, lehetőleg x közelébe, na ez már megvan :D
 			/*
 			move=look_for_win_or_block("O"); //look for win
 			if (move==null) {
@@ -209,9 +178,7 @@ namespace gomoku
 				}
 			}
 			*/
-			
 			/*
-			 * 
 			 * wpf-ben nincs alapból performClick event, de igazából nincs is rá szükség, talán...
 			Instead of PerformClick() use RaiseEvent()
 			
@@ -225,13 +192,145 @@ namespace gomoku
 			    button1.RaiseEvent(newEventArgs);         
 			}
 			*/
-			//}while(btnOK.Content=="");
-			//btnOK.PerformClick();
-			//btnOK=gridButton;
-			//RoutedEventArgs newEventArgs = new RoutedEventArgs(Button.ClickEvent);
-			//btnOK.RaiseEvent(newEventArgs);
+			
+			
+			
 			
 		}
+		
+		struct group{
+			public int start_x,start_y,end_x,end_y;
+			public bool found;
+			public string direction;
+		}
+		
+		private group seekGroups(int search_what, int times){
+			group csopi=new group();
+			csopi.found=false;
+			//*************horizontal**********
+			int count_horizontal_what=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (palya[i,j]==search_what) {
+						count_horizontal_what++;
+						if (count_horizontal_what==1) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+						}
+						if (count_horizontal_what>times) {
+							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="horizontal";
+							break;
+						}
+					} else {
+						count_horizontal_what=0;
+					}
+				}
+				count_horizontal_what=0;
+			}			
+			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************			
+			int count_vertical_x=0,count_vertical_o=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (palya[j,i]==1) {			//csak szimmetrikus táblára jó!!!!!
+						count_vertical_x++;
+						if (count_vertical_x>4) {
+							csopi.found=true;
+							break;
+						}
+					} else {
+						count_vertical_x=0;
+					}
+					if (palya[j,i]==2) {
+						count_vertical_o++;
+						if (count_vertical_o>4) {
+							csopi.found=true;
+							break;
+						}
+					} else {
+						count_vertical_o=0;
+					}					
+				}
+				count_vertical_x=0;
+				count_vertical_o=0;
+			}
+			//***********átló vizsgálat**********************
+			int temp_row,temp_col;
+			int count_left_diagonal_x=0,count_left_diagonal_o=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (i>j) {
+						temp_row=i-j;
+						temp_col=0;
+					} else {
+						temp_row=0;
+						temp_col=j-i;
+					}
+					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
+						if (palya[temp_row,temp_col]==1) {
+							count_left_diagonal_x++;
+							if (count_left_diagonal_x>4) {
+							csopi.found=true;
+							break;
+							}
+						} else {
+							count_left_diagonal_x=0;
+						}
+						if (palya[temp_row,temp_col]==2) {
+							count_left_diagonal_o++;
+							if (count_left_diagonal_o>4) {
+							csopi.found=true;
+							break;
+							}
+						} else {
+							count_left_diagonal_o=0;
+						}
+						temp_row++;
+						temp_col++;
+					}
+					count_left_diagonal_x=0;	//fontos
+					count_left_diagonal_o=0;	
+				}
+			}
+			//***********right diagonal*******************
+			int count_right_diagonal_x=0,count_right_diagonal_o=0;
+			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
+				for (int j = 0; j <= k;  j++) {
+					int i = k-j;
+					if (i<sorSzam && j<oszlopSzam) {
+						if (palya[i,j]==1) {
+							count_right_diagonal_x++;
+							if (count_right_diagonal_x>4) {
+							csopi.found=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_x=0;			
+						}
+						if (palya[i,j]==2) {
+							count_right_diagonal_o++;
+							if (count_right_diagonal_o>4) {
+							csopi.found=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_o=0;
+						}
+					}
+				}
+				count_right_diagonal_x=0;
+				count_right_diagonal_o=0;
+			}
+			
+			
+			
+			
+			
+			return csopi;
+		}
+		
 		private void checkForWinner(){
 			bool there_is_a_winner=false;	
 			//**************sorok vizsgálta, hogy van -e nyertes?*****************
@@ -324,88 +423,7 @@ namespace gomoku
 					count_left_diagonal_o=0;	
 				}
 			}
-			
-			//másik átló
-			
-			/*
-			int count_right_diagonal_x=0,count_right_diagonal_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					if (i>j) {
-						temp_row=i-j;	//itt kell matatnni valamit, a jobb főátló alatti részt nem vizsgálja meg!!!
-						temp_col=0;
-					} else {
-						temp_row=0;
-						temp_col=j-i;	//itt kell matatnni valamit, a jobb főátló alatti részt nem vizsgálja meg!!!
-					}
-					while (temp_row!=sorSzam && temp_col!=-1) {		//a második feltétel miatt járja csak be a jobb főátló feletti részt!
-						if (palya[temp_row,temp_col]==1) {
-							count_right_diagonal_x++;
-							if (count_right_diagonal_x>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_right_diagonal_x=0;
-						}
-						if (palya[temp_row,temp_col]==2) {
-							count_right_diagonal_o++;
-							if (count_right_diagonal_o>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_right_diagonal_o=0;
-						}
-						temp_row++;
-						temp_col--;
-					}
-					count_right_diagonal_x=0;	//ez a sarkok miatt kell
-					count_right_diagonal_o=0;	
-				}
-			}
-			*/
-			
-			/*
-			int temp_row,temp_col;
-			int count_diagonal_x=0,count_diagonal_o=0;
-			for (int i = 0; i < sorSzam; i++) {
-				for (int j = 0; j < oszlopSzam; j++) {
-					//left diagonal
-					if (i>=j) {
-						temp_row=i-j;
-						temp_col=0;
-					} else {
-						temp_row=0;
-						temp_col=j-i;
-					}
-					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
-						if (palya[temp_row,temp_col]==1) {
-							count_diagonal_x++;
-							if (count_diagonal_x>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_diagonal_x=0;
-						}
-						if (palya[temp_row,temp_col]==2) {
-							count_diagonal_o++;
-							if (count_diagonal_o>4) {
-							there_is_a_winner=true;
-							break;
-							}
-						} else {
-							count_diagonal_o=0;
-						}
-						temp_row++;
-						temp_col++;					
-					}				
-				}
-			}
-			*/
-			//***********right diagonal**************		elvileg most már nem	Hibás!!!!
-			
+			//***********right diagonal*******************
 			int count_right_diagonal_x=0,count_right_diagonal_o=0;
 			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
 				for (int j = 0; j <= k;  j++) {
@@ -433,9 +451,7 @@ namespace gomoku
 				}
 				count_right_diagonal_x=0;
 				count_right_diagonal_o=0;
-			}
-			
-						
+			}								
 			//győztes megnevezése
 			if (there_is_a_winner) {
 				String winner="";
@@ -459,7 +475,6 @@ namespace gomoku
 				foreach (Button bt in gr.Children) {
 					bt.Content="";
 					palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=0;
-					//x_or_not=true;
 					bt.IsEnabled=true;
 				}
 			}
