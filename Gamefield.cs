@@ -173,7 +173,7 @@ namespace gomoku
 			int best_move_x=0,best_move_y=0;
 			
 			//1: Win
-			seek_move=seekGroups(2,4);
+			seek_move=seekGroups(2,4);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D
 			if (seek_move.found) {
 				switch (seek_move.direction) {
 						case "horizontal":{
@@ -186,7 +186,7 @@ namespace gomoku
 								}
 							}
 							if (NotOutOfRange(seek_move.start_y-1)) {
-								if (palya[seek_move.start_x,seek_move.end_y-1]==0) {		
+								if (palya[seek_move.start_x,seek_move.start_y-1]==0) {		
 										best_move_x=seek_move.start_x;							 
 										best_move_y=seek_move.start_y-1;
 										best_move_found=true;
@@ -224,7 +224,7 @@ namespace gomoku
 								}
 							}
 							if (NotOutOfRange(seek_move.start_x-1) && NotOutOfRange(seek_move.start_y-1)) {
-								if (palya[seek_move.start_x-1,seek_move.end_y-1]==0) {		
+								if (palya[seek_move.start_x-1,seek_move.start_y-1]==0) {		
 										best_move_x=seek_move.start_x-1;							 
 										best_move_y=seek_move.start_y-1;
 										best_move_found=true;
@@ -235,7 +235,7 @@ namespace gomoku
 						}
 						case "rightdiagonal":{
 							if (NotOutOfRange(seek_move.end_x+1) && NotOutOfRange(seek_move.end_y-1)) {
-								if (palya[seek_move.end_x+1,seek_move.end_y+1]==0) {		
+								if (palya[seek_move.end_x+1,seek_move.end_y-1]==0) {		
 										best_move_x=seek_move.end_x+1;							 
 										best_move_y=seek_move.end_y-1;
 										best_move_found=true;
@@ -243,7 +243,7 @@ namespace gomoku
 								}
 							}
 							if (NotOutOfRange(seek_move.start_x-1) && NotOutOfRange(seek_move.start_y+1)) {
-								if (palya[seek_move.start_x-1,seek_move.end_y-1]==0) {		
+								if (palya[seek_move.start_x-1,seek_move.start_y-1]==0) {		
 										best_move_x=seek_move.start_x-1;							 
 										best_move_y=seek_move.start_y+1;
 										best_move_found=true;
@@ -315,7 +315,7 @@ namespace gomoku
 			public string direction;
 		}
 
-		private groupMark seekGroups(int search_what, int times){
+		private groupMark seekGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
 			groupMark csopi=new groupMark();
 			csopi.found=false;
 			//*************horizontal**********
@@ -424,6 +424,116 @@ namespace gomoku
 			}
 			return csopi;
 		}	
+		
+		private groupMark seekGroupsWithNeutrals(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+			groupMark csopi=new groupMark();
+			csopi.found=false;
+			//*************horizontal**********
+			int count_horizontal_what=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (palya[i,j]==search_what || palya[i,j]==0) {   //nem jó, bemengy nullára is, mást kell kitalálni
+						count_horizontal_what++;
+						if (count_horizontal_what==0) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+						}
+						if (count_horizontal_what>=times) {
+							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="horizontal";
+							break;
+						}
+					} else {
+						count_horizontal_what=0;
+					}
+				}
+				count_horizontal_what=0;
+			}			
+			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************			
+			int count_vertical_what=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
+						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
+						if (count_horizontal_what==search_what) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+						}
+						if (count_vertical_what>=times) {
+							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="vertical";
+							break;
+						}
+					} else {
+						count_vertical_what=0;
+					}			
+				}
+				count_vertical_what=0;
+			}
+			//***********átló vizsgálat**********************
+			int temp_row,temp_col;
+			int count_left_diagonal_what=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (i>j) {
+						temp_row=i-j;
+						temp_col=0;
+					} else {
+						temp_row=0;
+						temp_col=j-i;
+					}
+					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
+						if (palya[temp_row,temp_col]==search_what) {
+							count_left_diagonal_what++;
+							if (count_left_diagonal_what==search_what) {
+							csopi.start_x=i;
+							csopi.start_y=j;
+							}
+							if (count_left_diagonal_what>=times) {
+							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="leftdiagonal";
+							break;
+							}
+						} else {
+							count_left_diagonal_what=0;
+						}
+						temp_row++;
+						temp_col++;
+					}
+					count_left_diagonal_what=0;
+				}
+			}
+			//***********right diagonal*******************
+			int count_right_diagonal_what=0;
+			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
+				for (int j = 0; j <= k;  j++) {
+					int i = k-j;
+					if (i<sorSzam && j<oszlopSzam) {
+						if (palya[i,j]==search_what) {
+							count_right_diagonal_what++;
+							
+							if (count_right_diagonal_what>=times) {
+							csopi.found=true;
+							csopi.end_x=i;
+							csopi.end_y=j;
+							csopi.direction="rightdiagonal";
+							break;
+							}
+						} else {
+							count_right_diagonal_what=0;			
+						}
+					}
+				}
+				count_right_diagonal_what=0;
+			}
+			return csopi;
+		}
 		
 		private void checkForWinner(){
 			groupMark winning_group=new groupMark();
