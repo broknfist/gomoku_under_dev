@@ -158,45 +158,114 @@ namespace gomoku
 			}
 		}
 		
-		private bool NotOutOfRange(groupMark is_it_out){
-			bool notoutofrange=false;
+		private bool NotOutOfRange(int is_it_out){
+			bool notoutofrange=true;
+			if (is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0) {
+				notoutofrange=false;
+			}
 			return notoutofrange;
 		}
 		
 		private void make_move(Button player_pressed){
-			groupMark best_move=new groupMark();
+			//groupMark best_move=new groupMark();
 			groupMark seek_move=new groupMark();
-			best_move.found=false;
+			bool best_move_found=false;
+			int best_move_x=0,best_move_y=0;
 			
-			//1
+			//1: Win
 			seek_move=seekGroups(2,4);
 			if (seek_move.found) {
 				switch (seek_move.direction) {
 						case "horizontal":{
-							if (seek_move.end_y<oszlopSzam) {
-								if (seek_move.end_y!=oszlopSzam-1) {
-									if (palya[seek_move.end_x,seek_move.end_y+1]==0) {		//te jó ég, mi ez? ennek sokkal egyszerűbbnek kéne látszani. Nehezen olvasható
-										best_move=seek_move;								//csak egy egyszerű pályaszél vizsgálat 
-										best_move.end_y++;									//NotOutOfRange() !!!
-									}
+							if (NotOutOfRange(seek_move.end_y+1)) {
+								if (palya[seek_move.end_x,seek_move.end_y+1]==0) {		
+										best_move_x=seek_move.end_x;							 
+										best_move_y=seek_move.end_y+1;
+										best_move_found=true;
+										break;
+								}
+							}
+							if (NotOutOfRange(seek_move.start_y-1)) {
+								if (palya[seek_move.start_x,seek_move.end_y-1]==0) {		
+										best_move_x=seek_move.start_x;							 
+										best_move_y=seek_move.start_y-1;
+										best_move_found=true;
+										break;
 								}
 							}
 							break;
 						}
 						case "vertical":{
+							if (NotOutOfRange(seek_move.end_x+1)) {
+								if (palya[seek_move.end_x,seek_move.end_x+1]==0) {		
+										best_move_x=seek_move.end_x+1;							 
+										best_move_y=seek_move.end_y;
+										best_move_found=true;
+										break;
+								}
+							}
+							if (NotOutOfRange(seek_move.start_x-1)) {
+								if (palya[seek_move.start_x,seek_move.end_x-1]==0) {		
+										best_move_x=seek_move.start_x-1;							 
+										best_move_y=seek_move.start_y;
+										best_move_found=true;
+										break;
+								}
+							}
 							break;
 						}
 						case "leftdiagonal":{
+							if (NotOutOfRange(seek_move.end_x+1) && NotOutOfRange(seek_move.end_y+1)) {
+								if (palya[seek_move.end_x+1,seek_move.end_y+1]==0) {		
+										best_move_x=seek_move.end_x+1;							 
+										best_move_y=seek_move.end_y+1;
+										best_move_found=true;
+										break;
+								}
+							}
+							if (NotOutOfRange(seek_move.start_x-1) && NotOutOfRange(seek_move.start_y-1)) {
+								if (palya[seek_move.start_x-1,seek_move.end_y-1]==0) {		
+										best_move_x=seek_move.start_x-1;							 
+										best_move_y=seek_move.start_y-1;
+										best_move_found=true;
+										break;
+								}
+							}	
 							break;
 						}
 						case "rightdiagonal":{
+							if (NotOutOfRange(seek_move.end_x+1) && NotOutOfRange(seek_move.end_y-1)) {
+								if (palya[seek_move.end_x+1,seek_move.end_y+1]==0) {		
+										best_move_x=seek_move.end_x+1;							 
+										best_move_y=seek_move.end_y-1;
+										best_move_found=true;
+										break;
+								}
+							}
+							if (NotOutOfRange(seek_move.start_x-1) && NotOutOfRange(seek_move.start_y+1)) {
+								if (palya[seek_move.start_x-1,seek_move.end_y-1]==0) {		
+										best_move_x=seek_move.start_x-1;							 
+										best_move_y=seek_move.start_y+1;
+										best_move_found=true;
+										break;
+								}
+							}
 							break;
 						}
 						
 				}
 			}
+			if (best_move_found) {
+				ButtonPressDownByKoord(best_move_x,best_move_y);
+			}
 			
-			//1: win
+			//1: win 
+			
+			//four_out_of_five()
+			
+			
+			
+			
 			//2: block enemy win
 			//3: ha ellenfélnek 3 van és helye ötöt kirakni, megakadályozni
 			//4: ha a lépő félnek 3 van és van helye ötöt kirakni, letenni a negyediket
@@ -233,7 +302,7 @@ namespace gomoku
 			}
 			*/
 			//**********10: Random
-			if (!best_move.found) {
+			if (!best_move_found) {
 				Random_Move(player_pressed);
 			}
 			
