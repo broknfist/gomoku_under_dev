@@ -310,7 +310,7 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							if (count_horizontal_what==search_what) {
+							if (count_left_diagonal_what==search_what) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 							}
@@ -324,6 +324,7 @@ namespace gomoku
 						} else {
 							count_left_diagonal_what=0;
 						}
+						temp_row++;
 						temp_col++;
 					}
 					count_left_diagonal_what=0;
