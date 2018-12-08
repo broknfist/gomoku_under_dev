@@ -145,8 +145,7 @@ namespace gomoku
 		private void ButtonPressDownByKoord(int x_koord, int y_koord){
 			foreach (Grid gr in mainwindow.Board.Children) {
 				foreach (Button bt in gr.Children) {
-					if (Grid.GetRow(bt)==x_koord && Grid.GetColumn(bt)==y_koord){
-						
+					if (Grid.GetRow(bt)==x_koord && Grid.GetColumn(bt)==y_koord){	
 						bt.Content="O";
 						palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
 						x_or_not=true;
@@ -177,10 +176,11 @@ namespace gomoku
 			//groupMark seek_move=new groupMark();
 			Random vsz=new Random();
 			bool best_move_found=false;
+			bool move_alredy=false;
 			List<BestMoveWight> bestMoves=new List<BestMoveWight>();
 			
 			List<groupMark> negyesek_own=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
-			negyesek_own=seekGroupsToList(2,4);
+			negyesek_own=seekGroupsToList(1,2);
 			if (negyesek_own.Count!=0) {
 				best_move_found=true;
 				foreach (var i in negyesek_own) {
@@ -266,12 +266,17 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,1);
+				ButtonPressDownByKoord(bestMoves[0].x,bestMoves[0].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
+			
+			/*
 			List<groupMark> negyesek_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
 			negyesek_enemy=seekGroupsToList(1,4);
 			if (negyesek_enemy.Count!=0) {
@@ -359,10 +364,13 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,bestMoves.Count);
+				ButtonPressDownByKoord(bestMoves[poz].x,bestMoves[poz].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
 			List<groupMark> harmasok_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
@@ -452,10 +460,13 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,bestMoves.Count);
+				ButtonPressDownByKoord(bestMoves[poz].x,bestMoves[poz].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
 			
@@ -546,10 +557,13 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,bestMoves.Count);
+				ButtonPressDownByKoord(bestMoves[poz].x,bestMoves[poz].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
 			List<groupMark> kettesek_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
@@ -639,10 +653,13 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,bestMoves.Count);
+				ButtonPressDownByKoord(bestMoves[poz].x,bestMoves[poz].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
 			List<groupMark> kettesek_own=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
@@ -732,10 +749,13 @@ namespace gomoku
 					}
 				}
 			}
-			if(best_move_found){
-				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+			*/
+			if(best_move_found && !move_alredy){
+				int poz=vsz.Next(0,bestMoves.Count);
+				ButtonPressDownByKoord(bestMoves[poz].x,bestMoves[poz].y);
 				bestMoves.Clear();
 				best_move_found=false;
+				move_alredy=true;
 			}
 			
 			//1: Win
@@ -870,7 +890,7 @@ namespace gomoku
 			}
 			*/
 			//**********10: Random
-			if (!best_move_found) {
+			if (!best_move_found && !move_alredy) {
 				Random_Move(player_pressed);
 			}
 			
@@ -878,14 +898,16 @@ namespace gomoku
 		}	
 		
 		struct groupMark{
-			public int start_x,start_y,end_x,end_y;
-			public bool found;
+			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y;
+			public bool found,has_next,has_before;
 			public string direction;
 		}
 
 		private groupMark seekGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
 			groupMark csopi=new groupMark();
 			csopi.found=false;
+			csopi.has_before=false;
+			csopi.has_next=false;
 			//*************horizontal**********
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -895,6 +917,13 @@ namespace gomoku
 						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
+							if (NotOutOfRange(j-1)) {
+								if (palya[i,j-1]==0) {
+									csopi.has_before=true;
+									csopi.before_x=i;
+									csopi.before_y=j-1;
+								}
+							}
 						}
 						if (count_horizontal_what>=times) {
 							csopi.found=true;
@@ -916,13 +945,13 @@ namespace gomoku
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
 						if (count_horizontal_what==1) {
-							csopi.start_x=i;
-							csopi.start_y=j;
+							csopi.start_x=j;				//kurva fontos, talán ez okozott minden hibát!!!
+							csopi.start_y=i;
 						}
 						if (count_vertical_what>=times) {
 							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
+							csopi.end_x=j;
+							csopi.end_y=i;
 							csopi.direction="vertical";
 							break;
 						}
@@ -948,13 +977,13 @@ namespace gomoku
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
 							if (count_left_diagonal_what==1) {
-							csopi.start_x=i;
-							csopi.start_y=j;
+							csopi.start_x=temp_row;
+							csopi.start_y=temp_col;
 							}
 							if (count_left_diagonal_what>=times) {
 							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
+							csopi.end_x=temp_row;
+							csopi.end_y=temp_col;
 							csopi.direction="leftdiagonal";
 							break;
 							}
@@ -1011,6 +1040,11 @@ namespace gomoku
 							csopi.start_y=j;
 						}
 						if (count_horizontal_what>=times) {
+							if ((j+1)<oszlopSzam) {
+								if (count_horizontal_what!=search_what) {
+									
+								}
+							}
 							csopi.found=true;
 							csopi.end_x=i;
 							csopi.end_y=j;
