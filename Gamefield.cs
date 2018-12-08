@@ -166,18 +166,586 @@ namespace gomoku
 			return notoutofrange;
 		}
 		
+		struct BestMoveWight{
+			public int x;
+			public int y;
+			public int weight;
+		}
+		
 		private void make_move(Button player_pressed){
 			//groupMark best_move=new groupMark();
-			groupMark seek_move=new groupMark();
+			//groupMark seek_move=new groupMark();
+			Random vsz=new Random();
 			bool best_move_found=false;
-			int best_move_x=0,best_move_y=0;
+			List<BestMoveWight> bestMoves=new List<BestMoveWight>();
+			
+			List<groupMark> negyesek_own=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			negyesek_own=seekGroupsToList(2,4);
+			if (negyesek_own.Count!=0) {
+				best_move_found=true;
+				foreach (var i in negyesek_own) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
+			
+			List<groupMark> negyesek_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			negyesek_enemy=seekGroupsToList(1,4);
+			if (negyesek_enemy.Count!=0) {
+				best_move_found=true;
+				foreach (var i in negyesek_enemy) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
+			
+			List<groupMark> harmasok_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			harmasok_enemy=seekGroupsToList(1,3);
+			if (harmasok_enemy.Count!=0) {
+				best_move_found=true;
+				foreach (var i in harmasok_enemy) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
+			
+			
+			List<groupMark> harmasok_own=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			harmasok_own=seekGroupsToList(2,3);
+			if (harmasok_own.Count!=0) {
+				best_move_found=true;
+				foreach (var i in harmasok_own) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
+			
+			List<groupMark> kettesek_enemy=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			kettesek_enemy=seekGroupsToList(1,2);
+			if (kettesek_enemy.Count!=0) {
+				best_move_found=true;
+				foreach (var i in kettesek_enemy) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
+			
+			List<groupMark> kettesek_own=new List<groupMark>();		//meg kell nézni, hogy a csoportok mellett mi van!!! pálya széle, enemy  sokat gyorsíthat,spórolhat
+			kettesek_own=seekGroupsToList(2,2);
+			if (kettesek_own.Count!=0) {
+				best_move_found=true;
+				foreach (var i in kettesek_own) {
+					if (i.direction=="horizontal") {
+						if (NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_y-1)) {							
+							if (palya[i.start_x,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="vertical") {
+						if (NotOutOfRange(i.end_x+1)) {							
+							if (palya[i.end_x+1,i.end_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1)) {							
+							if (palya[i.start_x-1,i.start_y]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="leftdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y+1)) {							
+							if (palya[i.end_x+1,i.end_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y-1)) {
+							if (palya[i.start_x-1,i.start_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+					if (i.direction=="rightdiagonal") {
+						if (NotOutOfRange(i.end_x+1) && NotOutOfRange(i.end_y-1)) {							
+							if (palya[i.end_x+1,i.end_y-1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.end_x+1;							 
+								temp_best.y=i.end_y-1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+						if (NotOutOfRange(i.start_x-1) && NotOutOfRange(i.start_y+1)) {
+							if (palya[i.start_x-1,i.start_y+1]==0) {
+								BestMoveWight temp_best=new BestMoveWight();
+								temp_best.x=i.start_x-1;							 
+								temp_best.y=i.start_y+1;
+								temp_best.weight=0;
+								bestMoves.Add(temp_best);
+							}
+						}
+					}
+				}
+			}
+			if(best_move_found){
+				ButtonPressDownByKoord(bestMoves[vsz.Next(bestMoves.Count)].x,bestMoves[vsz.Next(bestMoves.Count)].y);
+				bestMoves.Clear();
+				best_move_found=false;
+			}
 			
 			//1: Win
-			seek_move=seekGroups(2,4);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D
-			if (seek_move.found) {
-				switch (seek_move.direction) {
-						case "horizontal":{
-							if (NotOutOfRange(seek_move.end_y+1)) {
+			
+			/*Start over, this is not good
+			seek_move=seekGroups(2,1);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D, és csak a második lépésben, aztán már nem csinálja...miért?
+			if (seek_move.found) {						//pálya széle is közrejátszik? inkább valami más
+				switch (seek_move.direction) {			//csak és kizárólag az utolsó lehetséges irányba (D-NY) hajlandó elindulni, vagy, ha foglalt délre
+						case "horizontal":{				//muszáj lesz súlyozni a lépéseket és random választani az egyformák közül, ha eljutok odáig
+							if (NotOutOfRange(seek_move.end_y+1)) {							//egyébként ez a rész így zsákutca...
 								if (palya[seek_move.end_x,seek_move.end_y+1]==0) {		
 										best_move_x=seek_move.end_x;							 
 										best_move_y=seek_move.end_y+1;
@@ -258,7 +826,7 @@ namespace gomoku
 			if (best_move_found) {
 				ButtonPressDownByKoord(best_move_x,best_move_y);
 			}
-			
+			*/
 			//1: win 
 			
 			//four_out_of_five()
@@ -324,7 +892,7 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[i,j]==search_what) {
 						count_horizontal_what++;
-						if (count_horizontal_what==search_what) {
+						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 						}
@@ -347,7 +915,7 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						if (count_horizontal_what==search_what) {
+						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 						}
@@ -379,7 +947,7 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							if (count_left_diagonal_what==search_what) {
+							if (count_left_diagonal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 							}
@@ -407,7 +975,10 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
-							
+							if (count_right_diagonal_what==1) {
+								csopi.start_x=i;
+								csopi.start_y=j;
+							}
 							if (count_right_diagonal_what>=times) {
 							csopi.found=true;
 							csopi.end_x=i;
@@ -425,16 +996,17 @@ namespace gomoku
 			return csopi;
 		}	
 		
-		private groupMark seekGroupsWithNeutrals(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+		private List<groupMark> seekGroupsToList(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
 			groupMark csopi=new groupMark();
+			List<groupMark> csoportok=new List<groupMark>();
 			csopi.found=false;
 			//*************horizontal**********
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[i,j]==search_what || palya[i,j]==0) {   //nem jó, bemengy nullára is, mást kell kitalálni
+					if (palya[i,j]==search_what) {
 						count_horizontal_what++;
-						if (count_horizontal_what==0) {
+						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 						}
@@ -443,7 +1015,8 @@ namespace gomoku
 							csopi.end_x=i;
 							csopi.end_y=j;
 							csopi.direction="horizontal";
-							break;
+							csoportok.Add(csopi);
+							//break;
 						}
 					} else {
 						count_horizontal_what=0;
@@ -457,7 +1030,7 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						if (count_horizontal_what==search_what) {
+						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 						}
@@ -466,7 +1039,8 @@ namespace gomoku
 							csopi.end_x=i;
 							csopi.end_y=j;
 							csopi.direction="vertical";
-							break;
+							csoportok.Add(csopi);
+							//break;
 						}
 					} else {
 						count_vertical_what=0;
@@ -489,7 +1063,7 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							if (count_left_diagonal_what==search_what) {
+							if (count_left_diagonal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
 							}
@@ -498,7 +1072,8 @@ namespace gomoku
 							csopi.end_x=i;
 							csopi.end_y=j;
 							csopi.direction="leftdiagonal";
-							break;
+							csoportok.Add(csopi);
+							//break;
 							}
 						} else {
 							count_left_diagonal_what=0;
@@ -517,13 +1092,17 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
-							
+							if (count_right_diagonal_what==1) {
+								csopi.start_x=i;
+								csopi.start_y=j;
+							}
 							if (count_right_diagonal_what>=times) {
 							csopi.found=true;
 							csopi.end_x=i;
 							csopi.end_y=j;
 							csopi.direction="rightdiagonal";
-							break;
+							csoportok.Add(csopi);
+							//break;
 							}
 						} else {
 							count_right_diagonal_what=0;			
@@ -532,7 +1111,7 @@ namespace gomoku
 				}
 				count_right_diagonal_what=0;
 			}
-			return csopi;
+			return csoportok;
 		}
 		
 		private void checkForWinner(){
