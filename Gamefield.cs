@@ -157,7 +157,7 @@ namespace gomoku
 				}
 			}
 		}
-		
+				
 		private bool NotOutOfRange(int is_it_out){			//nyilván csak szimetrikusra jó
 			bool notoutofrange=true;
 			if (is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0) {
@@ -166,11 +166,51 @@ namespace gomoku
 			return notoutofrange;
 		}
 		
+		
+		struct movesforlist{
+			public int x;
+			public int y;
+		}
+		
+		
 		private void make_move(Button player_pressed){
 			//groupMark best_move=new groupMark();
 			groupMark seek_move=new groupMark();
 			bool best_move_found=false;
+			bool moved_alredy=false;
 			int best_move_x=0,best_move_y=0;
+			
+			List<groupMarkMindennel> kettesek_o=new List<groupMarkMindennel>();
+			
+			kettesek_o=seekAllGroups(2,2);
+			
+			
+			List<movesforlist> best_moves=new List<movesforlist>();
+			movesforlist item_for_best_moves=new movesforlist();
+			
+		
+			foreach (var i in kettesek_o) {
+				if (i.has_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.has_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
+			
+			Random vsz=new Random();
+			int index_best_moves;
+			
+			if (best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+			}
+			
 			
 			//1: Win
 			/*
@@ -304,7 +344,7 @@ namespace gomoku
 			}
 			*/
 			//**********10: Random
-			if (!best_move_found) {
+			if (!moved_alredy) {
 				Random_Move(player_pressed);
 			}
 			
@@ -437,7 +477,7 @@ namespace gomoku
 		}
 		
 		
-		private groupMarkMindennel seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+		private List<groupMarkMindennel> seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
 			groupMarkMindennel csopi=new groupMarkMindennel();
 			List<groupMarkMindennel> osszes=new List<groupMarkMindennel>();
 			csopi.found=false;
@@ -472,6 +512,9 @@ namespace gomoku
 									csopi.has_next=true;
 									csopi.next_x=i;
 									csopi.next_y=j+1;
+									osszes.Add(csopi);
+								} else {
+									csopi.has_next=false;
 									osszes.Add(csopi);
 								}
 								
@@ -514,6 +557,9 @@ namespace gomoku
 									csopi.has_next=true;
 									csopi.next_x=j+1;
 									csopi.next_y=i;
+									osszes.Add(csopi);
+								} else {
+									csopi.has_next=false;
 									osszes.Add(csopi);
 								}
 							} else {
@@ -565,6 +611,9 @@ namespace gomoku
 										csopi.next_x=temp_row+1;
 										csopi.next_y=temp_col+1;
 										osszes.Add(csopi);
+									} else {
+										csopi.has_next=false;
+										osszes.Add(csopi);
 									}
 								} else {
 									csopi.has_next=false;
@@ -612,6 +661,9 @@ namespace gomoku
 										csopi.next_x=i+1;
 										csopi.next_y=j-1;
 										osszes.Add(csopi);
+									} else {
+										csopi.has_next=false;
+										osszes.Add(csopi);
 									}
 								} else {
 									csopi.has_next=false;
@@ -625,7 +677,7 @@ namespace gomoku
 				}
 				count_right_diagonal_what=0;
 			}
-			return csopi;
+			return osszes;
 		}
 		
 		private void checkForWinner(){
