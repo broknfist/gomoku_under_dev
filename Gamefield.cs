@@ -49,10 +49,11 @@ namespace gomoku
 			palya=new int[sorSzam,oszlopSzam];
 			Start();
 		}
+		
 		private void Start(){
-			//SeekMove move=new SeekMove(this???,15,15,palya);
-			BoardBirth();
+			BoardBirth();	//ide még lehet sok mindent pakolni: pályaméret, játékosválasztás, etc., beengedni ide, csak ha start buttonra bökünk stb.
 		}
+		
 		private void BoardBirth(){
 			Grid buttongrid=new Grid();
 			for (int i = 0; i < oszlopSzam; i++) {
@@ -66,19 +67,21 @@ namespace gomoku
 			for (int i = 0; i < oszlopSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {				
 					Button gridButton=new Button();
-					palya[i,j]=0;
-					gridButton.Content="";				
-					gridButton.Name="CellBtn";
-					gridButton.Width=40;
+					palya[i,j]=0;				//	üres
+					gridButton.Content="";		//	üres		
+					gridButton.Name="CellBtn";	//	!
+					gridButton.Width=40;		//e mellett akár képet is lehetne betenni
 					gridButton.Height=40;
-					gridButton.Click+=cellClick;
+					gridButton.Click+=cellClick;//	important
 					buttongrid.Children.Add(gridButton);
-					Grid.SetRow(gridButton,i);
+					Grid.SetRow(gridButton,i);	//	!
 					Grid.SetColumn(gridButton,j);
 				}
 			}
 			mainwindow.Board.Children.Add(buttongrid);
 		}
+		
+		//************	Main Event	!!!	*******************************************
 		private void cellClick(object sender,RoutedEventArgs e){
 			Button gridButton=(Button)sender;
 			if (x_or_not) {
@@ -88,10 +91,9 @@ namespace gomoku
 				x_or_not=false;
 				turn_count++;
 				checkForWinner();
-				//Random lépés a gépnek
 				//Random_Move(gridButton);
 				//ButtonPressDownByKoord(0,turn_count/2); //Mechanical Test
-				make_move(gridButton);
+				make_move(gridButton);		//választható játékosnál: if(cpu_turn && cpu_on) {lépés}
 				checkForWinner();
 			}else{
  				//Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
@@ -142,6 +144,7 @@ namespace gomoku
 			//mechanical test: ButtonPressDownByKoord(0,0);
 		}
 		
+		//************	Gépi Lépés	(alaposan átnézni, lehet hibaforrás)	**********
 		private void ButtonPressDownByKoord(int x_koord, int y_koord){
 			foreach (Grid gr in mainwindow.Board.Children) {
 				foreach (Button bt in gr.Children) {
@@ -149,15 +152,16 @@ namespace gomoku
 						
 						bt.Content="O";
 						palya[Grid.GetRow(bt),Grid.GetColumn(bt)]=2;
-						x_or_not=true;
-						turn_count++;
-						bt.IsEnabled=false;
+						x_or_not=true;		//Attention!!!
+						turn_count++;		//!
+						bt.IsEnabled=false;	//button block
 						break;
 					}
 				}
 			}
 		}
-				
+		
+		//***********	Mankó	***************		
 		private bool NotOutOfRange(int is_it_out){			//nyilván csak szimetrikusra jó
 			bool notoutofrange=true;
 			if (is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0) {
@@ -166,8 +170,7 @@ namespace gomoku
 			return notoutofrange;
 		}
 		
-		
-		struct movesforlist{
+		struct moves_for_best_list{	//Hát ez tök fölösleges, de tegnap már fáradt voltam, DE: lehetne súlyozni őket fontossági sorrendben!
 			public int x;
 			public int y;
 		}
@@ -183,8 +186,8 @@ namespace gomoku
 			
 			List<groupMarkMindennel> negyesek_o=new List<groupMarkMindennel>();
 			
-			List<movesforlist> best_moves=new List<movesforlist>();
-			movesforlist item_for_best_moves=new movesforlist();
+			List<moves_for_best_list> best_moves=new List<moves_for_best_list>();
+			moves_for_best_list item_for_best_moves=new moves_for_best_list();
 			
 			
 			negyesek_o=seekAllGroups(2,4);
@@ -204,15 +207,45 @@ namespace gomoku
 				}
 			}
 			
+			/*
 			if (!moved_alredy && best_moves.Count!=0) {
 				index_best_moves=vsz.Next(0,best_moves.Count);
 				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
 				moved_alredy=true;
 				best_moves.Clear();
 			}
+			*/
+			//OK. Teszt:
 			
+			List<groupMarkMindennel> negyesek_x=new List<groupMarkMindennel>();
 			
+			negyesek_x=seekAllGroups(1,4);	
+			foreach (var i in negyesek_x) {
+				if (i.has_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.has_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
 			
+			foreach (var i in best_moves) {
+				ButtonPressDownByKoord(i.x,i.y);
+			}
+			
+			//Függőleges szar helyre tesz, a vizsgálat jónak tűnik
+			//Jobb átló is rossz, ettől tartottam
+			//vízszintes és bal átló korrekt legalább
+			//Lehet a teszt rossz, de miután ledobta a jó helyre a pöttyöket x-től balra tesz még mindig egyet. Érdemes utána nézni
+			//És természetesen beeszi, ha nem egybefüggő a csoport, de ezt majd később
+			
+			ButtonPressDownByKoord(0,0);
+			
+			/*
 			//***********
 			
 			List<groupMarkMindennel> negyesek_x=new List<groupMarkMindennel>();
@@ -293,10 +326,15 @@ namespace gomoku
 				moved_alredy=true;
 				best_moves.Clear();
 			}
+			*/
+			
+			
 			
 			
 			//1: Win
 			/*
+			 * 
+			 * Első kitörlendő komment, ha megbizonyosodtam, seekAllMoves helyességéről
 			seek_move=seekGroups(2,1);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D
 			if (seek_move.found) {
 				switch (seek_move.direction) {
@@ -386,10 +424,7 @@ namespace gomoku
 			
 			//1: win 
 			
-			//four_out_of_five()
-			
-			
-			
+			//four_out_of_five()	lehetett volna egy jó kis metódus, de már nem. Csináltam jobbat
 			
 			//2: block enemy win
 			//3: ha ellenfélnek 3 van és helye ötöt kirakni, megakadályozni
@@ -398,20 +433,8 @@ namespace gomoku
 			//     X
 			//	   X    és társai varázslatokat egyenlőre inkább hagyjuk
 			//
-			//8: ...ha O-nak 1 van és kirakhat ötöt, letenni mellé a másodikat
+			//8: ...ha O-nak 1 van és kirakhat ötöt, letenni mellé a másodikat	ez fontos, hogy ott ne rugózzon, ahol nem nyerhet
 			//10: random O-nak, lehetőleg x közelébe, na ez már megvan :D
-			/*
-			move=look_for_win_or_block("O"); //look for win
-			if (move==null) {
-				move=look_for_win_or_block("X"); //look for block
-				if (move==null) {
-					move=look_for_corner();
-					if (move==null) {
-						move=look_for_open_space();
-					}
-				}
-			}
-			*/
 			/*
 			 * wpf-ben nincs alapból performClick event, de igazából nincs is rá szükség, talán...
 			Instead of PerformClick() use RaiseEvent()
@@ -426,20 +449,23 @@ namespace gomoku
 			    button1.RaiseEvent(newEventArgs);         
 			}
 			*/
-			//**********10: Random
+			
+			
+			//Teszthez megszüntetni a gépi lépést, csak akkor lépjen, ha van mire reagálni.
+			/*
 			if (!moved_alredy) {
 				Random_Move(player_pressed);
 			}
-			
-			
+			*/
 		}	
 		
 		struct groupMark{
-			public int start_x,start_y,end_x,end_y;
+			public int start_x,start_y,end_x,end_y;		//Az új metódussal elvileg felesleges. Ha átalakítom egyszerű gyóztes vizsgálatra, ez már nem fog kelleni
 			public bool found;
 			public string direction;
 		}
 
+		//Elvileg helyes, de azért majd nem árt egy alapos teszt
 		private groupMark seekGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
 			groupMark csopi=new groupMark();
 			csopi.found=false;
@@ -490,6 +516,8 @@ namespace gomoku
 				count_vertical_what=0;
 			}
 			//***********átló vizsgálat**********************
+			
+			//if(not_found alredy)		gyorsíthat itt a dolgok menetén
 			int temp_row,temp_col;
 			int count_left_diagonal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -505,14 +533,14 @@ namespace gomoku
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
 							if (count_left_diagonal_what==1) {
-							csopi.start_x=temp_row;
+							csopi.start_x=temp_row;				//Ezek sem kellenek, ha ezt a részt itt átalakítom szimpla Check_for_winner() methodra
 							csopi.start_y=temp_col;
 							}
 							if (count_left_diagonal_what>=times) {
 							csopi.found=true;
 							csopi.end_x=temp_row;
 							csopi.end_y=temp_col;
-							csopi.direction="leftdiagonal";
+							csopi.direction="leftdiagonal";		//ezek a tulajdonságok ide már nem is kellenek, a másik metódusban több dolog van. Habár lehet ez már oda is felesleges
 							break;
 							}
 						} else {
@@ -553,17 +581,18 @@ namespace gomoku
 			return csopi;
 		}	
 		
-		struct groupMarkMindennel{
+		//Minden, ami csak kellhet. Később tovább bővíthető, szükség szerint
+		struct groupMarkMindennel{	
 			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y,length;
-			public bool found,has_next,has_before;
+			public bool found,has_next,has_before;	//found-ot mire is használtam?
 			public string direction;
 		}
 		
 		
-		private List<groupMarkMindennel> seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+		private List<groupMarkMindennel> seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek (not yet)
 			groupMarkMindennel csopi=new groupMarkMindennel();
 			List<groupMarkMindennel> osszes=new List<groupMarkMindennel>();
-			csopi.found=false;
+			csopi.found=false;	//?
 			csopi.has_next=false;
 			csopi.has_before=false;
 			csopi.length=0;
@@ -618,7 +647,7 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						csopi.length++;
+						csopi.length++;						//Na ez a komment még a másikhoz készült
 						if (count_horizontal_what==1) {
 							csopi.start_x=j;
 							csopi.start_y=i;
@@ -743,11 +772,12 @@ namespace gomoku
 										csopi.has_next=true;
 										csopi.next_x=i+1;
 										csopi.next_y=j-1;
-										osszes.Add(csopi);
+										//osszes.Add(csopi);
 									} else {
 										csopi.has_next=false;
-										osszes.Add(csopi);
+										//osszes.Add(csopi);		//ez jobb, ha itt marad kommentben, mert már nem látom át
 									}
+									osszes.Add(csopi);
 								} else {
 									csopi.has_next=false;
 									osszes.Add(csopi);
@@ -777,15 +807,16 @@ namespace gomoku
 				if (winning_group.found) {
 					String winner="O";
 					MessageBox.Show(winner+" nyert!","Hurrá!");		//hát, elég nehéz rávenni a gépet, hogy nyerjen, holnap muszáj lesz már kicsit javítani rajta!!!
-					Reset_Board();
+					Reset_Board();									//azóta kicsit jobb lett
 				} 	
 			}
-			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {	//Ha a gép normálisan játszana, elvieleg erre itt nem lenne szükség
+			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {	//Ha a gép normálisan játszana, elvieleg erre itt nem lenne szükség (javul)
 				MessageBox.Show("Döntetlen!","Nesze!");
 				Reset_Board();
 			}	
 		}
 		
+		//Itt is becsúszhat valami hiba, tur_count stb.
 		private void Reset_Board(){
 			turn_count=0;
 			foreach (Grid gr in mainwindow.Board.Children) {
