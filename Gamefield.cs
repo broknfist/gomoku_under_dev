@@ -158,7 +158,7 @@ namespace gomoku
 			}
 		}
 		
-		private bool NotOutOfRange(int is_it_out){
+		private bool NotOutOfRange(int is_it_out){			//nyilván csak szimetrikusra jó
 			bool notoutofrange=true;
 			if (is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0) {
 				notoutofrange=false;
@@ -173,7 +173,8 @@ namespace gomoku
 			int best_move_x=0,best_move_y=0;
 			
 			//1: Win
-			seek_move=seekGroups(2,4);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D
+			/*
+			seek_move=seekGroups(2,1);  //(2,1) Bugfixed, de mindenáron dél-nyugatra megy :D
 			if (seek_move.found) {
 				switch (seek_move.direction) {
 						case "horizontal":{
@@ -255,6 +256,7 @@ namespace gomoku
 						
 				}
 			}
+			/*
 			if (best_move_found) {
 				ButtonPressDownByKoord(best_move_x,best_move_y);
 			}
@@ -428,25 +430,55 @@ namespace gomoku
 			return csopi;
 		}	
 		
-		private groupMark seekGroupsWithNeutrals(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
-			groupMark csopi=new groupMark();
+		struct groupMarkMindennel{
+			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y,length;
+			public bool found,has_next,has_before;
+			public string direction;
+		}
+		
+		
+		private groupMarkMindennel seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+			groupMarkMindennel csopi=new groupMarkMindennel();
+			List<groupMarkMindennel> osszes=new List<groupMarkMindennel>();
 			csopi.found=false;
+			csopi.has_next=false;
+			csopi.has_before=false;
+			csopi.length=0;
 			//*************horizontal**********
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[i,j]==search_what || palya[i,j]==0) {   //nem jó, bemengy nullára is, mást kell kitalálni
+					if (palya[i,j]==search_what) {  
 						count_horizontal_what++;
-						if (count_horizontal_what==0) {
+						csopi.length++;
+						if (count_horizontal_what==1) {
 							csopi.start_x=i;
 							csopi.start_y=j;
+							if (NotOutOfRange(j-1)) {
+								if (palya[i,j-1]==0) {
+									csopi.has_before=true;
+									csopi.before_x=i;
+									csopi.before_y=j-1;
+								}
+							}
 						}
 						if (count_horizontal_what>=times) {
 							csopi.found=true;
 							csopi.end_x=i;
 							csopi.end_y=j;
 							csopi.direction="horizontal";
-							break;
+							if (NotOutOfRange(j+1)) {
+								if (palya[i,j+1]==0) {
+									csopi.has_next=true;
+									csopi.next_x=i;
+									csopi.next_y=j+1;
+									osszes.Add(csopi);
+								}
+								
+							} else {
+								csopi.has_next=false;
+								osszes.Add(csopi);
+							}
 						}
 					} else {
 						count_horizontal_what=0;
@@ -460,16 +492,34 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						if (count_horizontal_what==search_what) {
-							csopi.start_x=i;
-							csopi.start_y=j;
+						csopi.length++;
+						if (count_horizontal_what==1) {
+							csopi.start_x=j;
+							csopi.start_y=i;
+							if (NotOutOfRange(j-1)) {
+								if (palya[j-1,i]==0) {
+									csopi.has_before=true;
+									csopi.before_x=j-1;
+									csopi.before_y=i;
+								}
+							}
 						}
 						if (count_vertical_what>=times) {
 							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
+							csopi.end_x=j;
+							csopi.end_y=i;
 							csopi.direction="vertical";
-							break;
+							if (NotOutOfRange(j+1)) {
+								if (palya[j+1,i]==0) {
+									csopi.has_next=true;
+									csopi.next_x=j+1;
+									csopi.next_y=i;
+									osszes.Add(csopi);
+								}
+							} else {
+								csopi.has_next=false;
+								osszes.Add(csopi);
+							}
 						}
 					} else {
 						count_vertical_what=0;
@@ -492,16 +542,34 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							if (count_left_diagonal_what==search_what) {
-							csopi.start_x=i;
-							csopi.start_y=j;
+							csopi.length++;
+							if (count_left_diagonal_what==1) {
+								csopi.start_x=temp_row;
+								csopi.start_y=temp_col;
+								if (NotOutOfRange(temp_row-1) && NotOutOfRange(temp_col-1)) {
+									if (palya[temp_row-1,temp_col-1]==0) {
+										csopi.has_before=true;
+										csopi.before_x=temp_row-1;
+										csopi.before_y=temp_col-1;
+									}
+								}
 							}
 							if (count_left_diagonal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
-							csopi.direction="leftdiagonal";
-							break;
+								csopi.found=true;
+								csopi.end_x=temp_row;
+								csopi.end_y=temp_col;
+								csopi.direction="leftdiagonal";
+								if (NotOutOfRange(temp_row+1) && NotOutOfRange(temp_col+1)) {
+									if (palya[temp_row+1,temp_col+1]==0) {
+										csopi.has_next=true;
+										csopi.next_x=temp_row+1;
+										csopi.next_y=temp_col+1;
+										osszes.Add(csopi);
+									}
+								} else {
+									csopi.has_next=false;
+									osszes.Add(csopi);
+								}
 							}
 						} else {
 							count_left_diagonal_what=0;
@@ -520,13 +588,35 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
+							csopi.length++;
+							if (count_right_diagonal_what==1) {
+								csopi.start_x=i;
+								csopi.start_y=j;
+								if (NotOutOfRange(i-1) && NotOutOfRange(j+1)) {
+									if (palya[i-1,j+1]==0) {
+										csopi.has_before=true;
+										csopi.before_x=i-1;
+										csopi.before_y=j+1;
+									}
+								}
+							}
 							
 							if (count_right_diagonal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
-							csopi.direction="rightdiagonal";
-							break;
+								csopi.found=true;
+								csopi.end_x=i;
+								csopi.end_y=j;
+								csopi.direction="rightdiagonal";
+								if (NotOutOfRange(i+1) && NotOutOfRange(j-1)) {
+									if (palya[i+1,j-1]==0) {
+										csopi.has_next=true;
+										csopi.next_x=i+1;
+										csopi.next_y=j-1;
+										osszes.Add(csopi);
+									}
+								} else {
+									csopi.has_next=false;
+									osszes.Add(csopi);
+								}
 							}
 						} else {
 							count_right_diagonal_what=0;			
