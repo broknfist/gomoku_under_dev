@@ -176,18 +176,103 @@ namespace gomoku
 		private void make_move(Button player_pressed){
 			//groupMark best_move=new groupMark();
 			groupMark seek_move=new groupMark();
-			bool best_move_found=false;
+			//bool best_move_found=false;
 			bool moved_alredy=false;
-			int best_move_x=0,best_move_y=0;
+			//int best_move_x=0,best_move_y=0;
+			Random vsz=new Random();
 			
-			List<groupMarkMindennel> kettesek_o=new List<groupMarkMindennel>();
-			
-			kettesek_o=seekAllGroups(2,2);
-			
+			List<groupMarkMindennel> negyesek_o=new List<groupMarkMindennel>();
 			
 			List<movesforlist> best_moves=new List<movesforlist>();
 			movesforlist item_for_best_moves=new movesforlist();
 			
+			
+			negyesek_o=seekAllGroups(2,4);
+			
+			int index_best_moves=0;
+		
+			foreach (var i in negyesek_o) {
+				if (i.has_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.has_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
+			
+			if (!moved_alredy && best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+				best_moves.Clear();
+			}
+			
+			
+			
+			//***********
+			
+			List<groupMarkMindennel> negyesek_x=new List<groupMarkMindennel>();
+			
+			negyesek_x=seekAllGroups(1,4);	
+			foreach (var i in negyesek_x) {
+				if (i.has_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.has_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}	
+			if (!moved_alredy && best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+				best_moves.Clear();
+			}
+			
+			
+			//***********
+			
+			List<groupMarkMindennel> harmasok_o=new List<groupMarkMindennel>();
+			
+			harmasok_o=seekAllGroups(2,3);
+			
+			
+			
+		
+			foreach (var i in harmasok_o) {
+				if (i.has_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.has_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
+			
+			if (!moved_alredy && best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+				best_moves.Clear();
+			}
+			
+			
+			//**************
+			
+			List<groupMarkMindennel> kettesek_o=new List<groupMarkMindennel>();
+			
+			kettesek_o=seekAllGroups(2,2);
 		
 			foreach (var i in kettesek_o) {
 				if (i.has_before) {
@@ -202,13 +287,11 @@ namespace gomoku
 				}
 			}
 			
-			Random vsz=new Random();
-			int index_best_moves;
-			
-			if (best_moves.Count!=0) {
+			if (!moved_alredy && best_moves.Count!=0) {
 				index_best_moves=vsz.Next(0,best_moves.Count);
 				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
 				moved_alredy=true;
+				best_moves.Clear();
 			}
 			
 			
