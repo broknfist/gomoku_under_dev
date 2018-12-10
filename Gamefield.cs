@@ -208,19 +208,19 @@ namespace gomoku
 			}
 			
 			
-			/*
+			
 			if (!moved_alredy && best_moves.Count!=0) {
 				index_best_moves=vsz.Next(0,best_moves.Count);
 				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
 				moved_alredy=true;
 				best_moves.Clear();
 			}
-			*/
+			
 			//OK. Teszt:
 			/*
 			List<groupMarkMindennel> negyesek_x=new List<groupMarkMindennel>();
 			
-			negyesek_x=seekAllGroups(1,4);	
+			negyesek_x=seekAllGroups(1,3);	
 			foreach (var i in negyesek_x) {
 				if (i.empty_before) {
 					item_for_best_moves.x=i.before_x;
@@ -239,13 +239,11 @@ namespace gomoku
 			}
 			best_moves.Clear();
 			
-			//Függőleges szar helyre tesz, a vizsgálat jónak tűnik
-			//Jobb átló is rossz, ettől tartottam
-			//vízszintes és bal átló korrekt legalább
-			//Lehet a teszt rossz, de miután ledobta a jó helyre a pöttyöket x-től balra tesz még mindig egyet. Érdemes utána nézni
-			//És természetesen beeszi, ha nem egybefüggő a csoport, de ezt majd később
+			//Elvileg minden jó, ha mégis gebasz van, itt keressem először!!! Mármint a seekAllGroups()-ban
+			//jobb átló X mintha rossz lenne! Nem, biztos, hogy rossz, holnap kijavítani
 			
-			ButtonPressDownByKoord(0,0);
+			
+			ButtonPressDownByKoord(1,0);
 			*/
 			
 			//***********
@@ -275,6 +273,33 @@ namespace gomoku
 			
 			//***********
 			
+			List<groupMarkMindennel> harmasok_x=new List<groupMarkMindennel>();
+			
+			harmasok_x=seekAllGroups(1,3);
+		
+			foreach (var i in harmasok_x) {
+				if (i.empty_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.have_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
+			
+			if (!moved_alredy && best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+				best_moves.Clear();
+			}
+			
+			
+			//**************
+			
 			List<groupMarkMindennel> harmasok_o=new List<groupMarkMindennel>();
 			
 			harmasok_o=seekAllGroups(2,3);
@@ -283,6 +308,33 @@ namespace gomoku
 			
 		
 			foreach (var i in harmasok_o) {
+				if (i.empty_before) {
+					item_for_best_moves.x=i.before_x;
+					item_for_best_moves.y=i.before_y;
+					best_moves.Add(item_for_best_moves);
+				}
+				if (i.have_next) {
+					item_for_best_moves.x=i.next_x;
+					item_for_best_moves.y=i.next_y;
+					best_moves.Add(item_for_best_moves);
+				}
+			}
+			
+			if (!moved_alredy && best_moves.Count!=0) {
+				index_best_moves=vsz.Next(0,best_moves.Count);
+				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+				moved_alredy=true;
+				best_moves.Clear();
+			}
+			
+			
+			//**************
+			
+			List<groupMarkMindennel> kettesek_x=new List<groupMarkMindennel>();
+			
+			kettesek_x=seekAllGroups(1,2);
+		
+			foreach (var i in kettesek_x) {
 				if (i.empty_before) {
 					item_for_best_moves.x=i.before_x;
 					item_for_best_moves.y=i.before_y;
@@ -475,7 +527,7 @@ namespace gomoku
 			temp_group.have_next=false;
 			temp_group.empty_before=false;
 			//temp_group.length=0;
-			//*************horizontal**********Elvileg jó
+			//*************horizontal**********Elvileg jó,tesztelve
 			
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -525,7 +577,7 @@ namespace gomoku
 				count_horizontal_what=0;
 			}
 			
-			//*****vertical
+			//*****vertical***********elvileg jó,tesztelve
 			
 			int count_vertical_what=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -550,15 +602,28 @@ namespace gomoku
 							
 							//kezdő előtti pozícióba tesz
 							
-							if (palya[temp_group.start_x,temp_group.start_y-1]==0) {	//start pozíció előtti mező vizsgálat
+							if (NotOutOfRange(temp_group.start_x-1) && palya[temp_group.start_x-1,temp_group.start_y]==0) {	//start pozíció előtti mező vizsgálat
 								temp_group.empty_before=true;
 								temp_group.before_x=temp_group.start_x-1;
 								temp_group.before_y=temp_group.start_y;
 							}
 							
 							//Hát sajnos kell pálya szélét vizsgálni, csak itt azt függőlegesen
-							//azaz ha a pálya alján van négyes csoport, nem tesz be elé  					Javítani, de már nem ma
+							//azaz ha a pálya alján van négyes csoport, nem tesz be elé 
 							
+							
+							
+							
+							final_group=temp_group;
+							osszes.Add(final_group);
+						} else if (count_vertical_what>=times && !NotOutOfRange(j+1)){	//pálya széle
+							temp_group.found=true;
+							//a következő már kívül lenne a pályán
+							if (palya[temp_group.start_x-1,temp_group.start_y]==0) {	//start pozíció előtti mező vizsgálat
+								temp_group.empty_before=true;
+								temp_group.before_x=temp_group.start_x-1;
+								temp_group.before_y=temp_group.start_y;
+							}
 							final_group=temp_group;
 							osszes.Add(final_group);
 						}
@@ -578,7 +643,7 @@ namespace gomoku
 				count_vertical_what=0;
 			}
 		
-			//***********átló vizsgálat**********************
+			//***********átló vizsgálat********************** elvileg jó, alaposan tesztelni!
 			
 			int temp_row,temp_col;
 			int count_left_diagonal_what=0;
@@ -623,7 +688,14 @@ namespace gomoku
 										temp_group.have_next=false;
 									}
 								}
-								osszes.Add(temp_group);
+								//előző:
+								if (NotOutOfRange(temp_group.start_x-1) && NotOutOfRange(temp_group.start_y-1) && palya[temp_group.start_x-1,temp_group.start_y-1]==0) {
+									temp_group.empty_before=true;
+									temp_group.before_x=temp_group.start_x-1;
+									temp_group.before_y=temp_group.start_y-1;
+								}
+								final_group=temp_group;
+								osszes.Add(final_group);
 							}
 						} else {
 							count_left_diagonal_what=0;
@@ -644,46 +716,92 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
-							temp_group.length++;
+							//temp_group.length++;
 							if (count_right_diagonal_what==1) {
 								temp_group.start_x=i;
 								temp_group.start_y=j;
-								//áttenni
-								/*
-								if (NotOutOfRange(i-1) && NotOutOfRange(j+1)) {
-									if (palya[i-1,j+1]==0) {
-										temp_group.empty_before=true;
-										temp_group.before_x=i-1;
-										temp_group.before_y=j+1;
-									}
-								}
-								*/
 							}
 							
-							if (count_right_diagonal_what>=times) {
+							//if (count_right_diagonal_what>=times && NotOutOfRange(i+1) && NotOutOfRange(j-1) && palya[i+1,j-1]!=search_what) {
+							if (count_right_diagonal_what>=times && NotOutOfRange(i-1) && NotOutOfRange(j+1) && palya[i-1,j+1]!=search_what) {	
 								temp_group.found=true;
 								temp_group.end_x=i;
 								temp_group.end_y=j;
 								temp_group.direction="rightdiagonal";
-								if (NotOutOfRange(i+1) && NotOutOfRange(j-1)) {
-									if (palya[i+1,j-1]==0) {
+								
+									if (palya[i-1,j+1]==0) {
 										temp_group.have_next=true;
-										temp_group.next_x=i+1;
-										temp_group.next_y=j-1;
+										temp_group.next_x=i-1;
+										temp_group.next_y=j+1;
+									} else {
+										temp_group.have_next=false;
+									}
+								
+								//másik vége:
+								if (NotOutOfRange(temp_group.start_x+1) && NotOutOfRange(temp_group.start_y-1)) {
+									if (palya[temp_group.start_x+1,temp_group.start_y-1]==0) {
+										temp_group.empty_before=true;
+										temp_group.before_x=temp_group.start_x+1;
+										temp_group.before_y=temp_group.start_y-1;
 									} else {
 										temp_group.have_next=false;
 									}
 								}
-								osszes.Add(temp_group);
+								//kell még a jobb felső sarokból, és végig a felső sorból induló, aztán kész
+								final_group=temp_group;
+								osszes.Add(final_group);
+							} else if ((!NotOutOfRange(i-1) || !NotOutOfRange(j+1)) && count_right_diagonal_what>=times){		//pálya teteje és jobb széle && helyett lehet || kell a föntiekbe is!
+								temp_group.found=true;
+								temp_group.end_x=i;
+								temp_group.end_y=j;
+								temp_group.direction="rightdiagonal";
+								temp_group.have_next=false;
+								
+								//másik vége:
+								if (NotOutOfRange(temp_group.start_x+1) && NotOutOfRange(temp_group.start_y-1)) {
+									if (palya[temp_group.start_x+1,temp_group.start_y-1]==0) {
+										temp_group.empty_before=true;
+										temp_group.before_x=temp_group.start_x+1;
+										temp_group.before_y=temp_group.start_y-1;
+									} else {
+										temp_group.empty_before=false;
+									}
+								}
+								//kell még a jobb felső sarokból, és végig a felső sorból induló, aztán kész
+								final_group=temp_group;
+								osszes.Add(final_group);
 							}
 						} else {
-							count_right_diagonal_what=0;			//ez hogy kerül ide?
+							count_right_diagonal_what=0;
 						}
 					}
 				}
 				count_right_diagonal_what=0;
 			}
 			
+			
+			
+			
+			/*************origi rightdiagonal
+			int count_right_diagonal_what=0;
+			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
+				for (int j = 0; j <= k;  j++) {
+					int i = k-j;
+					if (i<sorSzam && j<oszlopSzam) {
+						if (palya[i,j]==search_what) {
+							count_right_diagonal_what++;
+							if (count_right_diagonal_what>=times) {
+							found=true;
+							break;
+							}
+						} else {
+							count_right_diagonal_what=0;			
+						}
+					}
+				}
+				count_right_diagonal_what=0;
+			}
+			*/
 			return osszes;
 		}
 		
