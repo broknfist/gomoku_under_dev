@@ -93,7 +93,7 @@ namespace gomoku
 				checkForWinner();
 				//Random_Move(gridButton);
 				//ButtonPressDownByKoord(0,turn_count/2); //Mechanical Test
-				make_move(gridButton);		//választható játékosnál: if(cpu_turn && cpu_on) {lépés}
+				make_move();		//választható játékosnál: if(cpu_turn && cpu_on) {lépés}
 				checkForWinner();
 			}else{
  				//Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
@@ -176,9 +176,9 @@ namespace gomoku
 		}
 		
 		
-		private void make_move(Button player_pressed){
+		private void make_move(){
 			//groupMark best_move=new groupMark();
-			groupMark seek_move=new groupMark();
+			//groupMark seek_move=new groupMark();
 			//bool best_move_found=false;
 			bool moved_alredy=false;
 			//int best_move_x=0,best_move_y=0;
@@ -189,7 +189,7 @@ namespace gomoku
 			List<moves_for_best_list> best_moves=new List<moves_for_best_list>();
 			moves_for_best_list item_for_best_moves=new moves_for_best_list();
 			
-			
+			/*
 			negyesek_o=seekAllGroups(2,4);
 			
 			int index_best_moves=0;
@@ -206,6 +206,7 @@ namespace gomoku
 					best_moves.Add(item_for_best_moves);
 				}
 			}
+			*/
 			
 			/*
 			if (!moved_alredy && best_moves.Count!=0) {
@@ -221,21 +222,22 @@ namespace gomoku
 			
 			negyesek_x=seekAllGroups(1,4);	
 			foreach (var i in negyesek_x) {
-				if (i.has_before) {
+				if (i.empty_before) {
 					item_for_best_moves.x=i.before_x;
 					item_for_best_moves.y=i.before_y;
 					best_moves.Add(item_for_best_moves);
 				}
-				if (i.has_next) {
+				if (i.have_next) {
 					item_for_best_moves.x=i.next_x;
 					item_for_best_moves.y=i.next_y;
 					best_moves.Add(item_for_best_moves);
 				}
 			}
-			
+			negyesek_x.Clear();
 			foreach (var i in best_moves) {
 				ButtonPressDownByKoord(i.x,i.y);
 			}
+			best_moves.Clear();
 			
 			//Függőleges szar helyre tesz, a vizsgálat jónak tűnik
 			//Jobb átló is rossz, ettől tartottam
@@ -457,33 +459,19 @@ namespace gomoku
 				Random_Move(player_pressed);
 			}
 			*/
-		}	
-		
-		struct groupMark{
-			public int start_x,start_y,end_x,end_y;		//Az új metódussal elvileg felesleges. Ha átalakítom egyszerű gyóztes vizsgálatra, ez már nem fog kelleni
-			public bool found;
-			public string direction;
 		}
 
 		//Elvileg helyes, de azért majd nem árt egy alapos teszt
-		private groupMark seekGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
-			groupMark csopi=new groupMark();
-			csopi.found=false;
+		private bool seekGroupsForWin(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek 
+			bool found=false;
 			//*************horizontal**********
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[i,j]==search_what) {
 						count_horizontal_what++;
-						if (count_horizontal_what==1) {
-							csopi.start_x=i;
-							csopi.start_y=j;
-						}
 						if (count_horizontal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
-							csopi.direction="horizontal";
+							found=true;
 							break;
 						}
 					} else {
@@ -498,15 +486,8 @@ namespace gomoku
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						if (count_vertical_what==1) {
-							csopi.start_x=j;
-							csopi.start_y=i;
-						}
 						if (count_vertical_what>=times) {
-							csopi.found=true;
-							csopi.end_x=j;
-							csopi.end_y=i;
-							csopi.direction="vertical";
+							found=true;
 							break;
 						}
 					} else {
@@ -532,15 +513,8 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							if (count_left_diagonal_what==1) {
-							csopi.start_x=temp_row;				//Ezek sem kellenek, ha ezt a részt itt átalakítom szimpla Check_for_winner() methodra
-							csopi.start_y=temp_col;
-							}
 							if (count_left_diagonal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=temp_row;
-							csopi.end_y=temp_col;
-							csopi.direction="leftdiagonal";		//ezek a tulajdonságok ide már nem is kellenek, a másik metódusban több dolog van. Habár lehet ez már oda is felesleges
+							found=true;
 							break;
 							}
 						} else {
@@ -560,15 +534,8 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
-							if (count_right_diagonal_what==1) {
-								csopi.start_x=i;
-								csopi.start_y=j;
-							}
 							if (count_right_diagonal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
-							csopi.direction="rightdiagonal";
+							found=true;
 							break;
 							}
 						} else {
@@ -578,114 +545,175 @@ namespace gomoku
 				}
 				count_right_diagonal_what=0;
 			}
-			return csopi;
+			return found;
 		}	
 		
 		//Minden, ami csak kellhet. Később tovább bővíthető, szükség szerint
 		struct groupMarkMindennel{	
 			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y,length;
-			public bool found,has_next,has_before;	//found-ot mire is használtam?
+			public bool found,have_next,empty_before;	//found-ot mire is használtam? Ja, checkforwinre
 			public string direction;
 		}
 		
 		
 		private List<groupMarkMindennel> seekAllGroups(int search_what, int times){		//esetleg egy empty elemet is fel lehetne venni a paraméterek (not yet)
-			groupMarkMindennel csopi=new groupMarkMindennel();
+			groupMarkMindennel temp_group=new groupMarkMindennel();
+			groupMarkMindennel final_group=new groupMarkMindennel();
 			List<groupMarkMindennel> osszes=new List<groupMarkMindennel>();
-			csopi.found=false;	//?
-			csopi.has_next=false;
-			csopi.has_before=false;
-			csopi.length=0;
-			//*************horizontal**********
+			temp_group.found=false;	//?
+			temp_group.have_next=false;
+			temp_group.empty_before=false;
+			//temp_group.length=0;
+			//*************horizontal**********Elvileg jó
+			
 			int count_horizontal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
-					if (palya[i,j]==search_what) {  
+					if (palya[i,j]==search_what) {
 						count_horizontal_what++;
-						csopi.length++;
-						if (count_horizontal_what==1) {
-							csopi.start_x=i;
-							csopi.start_y=j;
-							if (NotOutOfRange(j-1)) {
-								if (palya[i,j-1]==0) {
-									csopi.has_before=true;
-									csopi.before_x=i;
-									csopi.before_y=j-1;
-								}
-							}
+						//****start init
+						if (count_horizontal_what==1) {		//fuck ez kavart be, csak három óra volt kijavítani
+							temp_group.start_x=i;
+							temp_group.start_y=j;
 						}
-						if (count_horizontal_what>=times) {
-							csopi.found=true;
-							csopi.end_x=i;
-							csopi.end_y=j;
-							csopi.direction="horizontal";
-							if (NotOutOfRange(j+1)) {
-								if (palya[i,j+1]==0) {
-									csopi.has_next=true;
-									csopi.next_x=i;
-									csopi.next_y=j+1;
-									osszes.Add(csopi);
-								} else {
-									csopi.has_next=false;
-									osszes.Add(csopi);
-								}
-								
-							} else {
-								csopi.has_next=false;
-								osszes.Add(csopi);
+						//******csoport vége keresés **********
+						if (count_horizontal_what>=times && !NotOutOfRange(j+1)) {  //pálya széle
+							temp_group.found=true;
+							temp_group.have_next=false;
+								//temp_group.next_x=i;			pályán kívül van
+								//temp_group.next_y=j+1;		pályán kívül van
+							if (NotOutOfRange(temp_group.start_y-1) && palya[temp_group.start_x,temp_group.start_y-1]==0) {	//start pozíció előtti mező vizsgálat
+								temp_group.empty_before=true;
+								temp_group.before_x=temp_group.start_x;
+								temp_group.before_y=temp_group.start_y-1;
 							}
+							temp_group.end_x=i;
+							temp_group.end_y=j;
+							temp_group.direction="horizontal";
+							final_group=temp_group;
+							osszes.Add(final_group);
+						} else if (count_horizontal_what>=times && NotOutOfRange(j+1) && palya[i,j+1]!=search_what){	//még a csoport része, de a következő már nem
+							temp_group.found=true;
+							if (palya[i,j+1]==0) {		//következő üres
+								temp_group.have_next=true;
+								temp_group.next_x=i;
+								temp_group.next_y=j+1;
+							}
+							if (NotOutOfRange(temp_group.start_y-1) && palya[temp_group.start_x,temp_group.start_y-1]==0) {	//start pozíció előtti mező vizsgálat
+								temp_group.empty_before=true;
+								temp_group.before_x=temp_group.start_x;
+								temp_group.before_y=temp_group.start_y-1;
+							}
+							final_group=temp_group;
+							osszes.Add(final_group);
 						}
 					} else {
 						count_horizontal_what=0;
 					}
 				}
 				count_horizontal_what=0;
-			}			
-			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************			
+			}
+			
+			//*****vertical
+			
+			
+			
+			
+			/*
+			count_horizontal_what=0;
+			for (int i = 0; i < sorSzam; i++) {
+				for (int j = 0; j < oszlopSzam; j++) {
+					if (palya[i,j]==search_what) {  
+						count_horizontal_what++;
+						//temp_group.length++;
+						if (count_horizontal_what==search_what) {
+							temp_group.start_x=i;
+							temp_group.start_y=j;
+							if (NotOutOfRange(j-1)) {
+								if (palya[i,j-1]==0) {
+									temp_group.has_before=true;
+									temp_group.before_x=i;
+									temp_group.before_y=j-1;
+								}
+							}
+						}
+						//if (count_horizontal_what>=times) {		//Ezt kéne módosítani
+						//kell egy next method
+						//if (count_horizontal_what>=times && NotOutOfRange(j+1) && palya[i,j+1]!=search_what) {
+						if (count_horizontal_what>=times && palya[i,j+1]!=search_what) {
+							temp_group.found=true;
+							temp_group.end_x=i;
+							temp_group.end_y=j;
+							temp_group.direction="horizontal";
+							
+							if (NotOutOfRange(j+1)) {
+								if (palya[i,j+1]==0) {
+									temp_group.has_next=true;
+									temp_group.next_x=i;
+									temp_group.next_y=j+1;
+								} else {
+									temp_group.has_next=false;
+								}	
+							}
+							
+							//final_group=temp_group;
+							//osszes.Add(final_group);	//de ez nem jön be ide, ha a pálya szélén van, fordítva kéne vizsgálni
+						}
+					} else {
+						count_horizontal_what=0;
+					}
+				}
+				count_horizontal_what=0;
+			}
+			/*			
+			//**************oszlopok vizsgálta, hogy van -e nyertes?*****************		
+			/*
 			int count_vertical_what=0;
 			for (int i = 0; i < sorSzam; i++) {
 				for (int j = 0; j < oszlopSzam; j++) {
 					if (palya[j,i]==search_what) {			//beletenni vizsgálatot, hogy talált -e már vízszintest!!!!    habár lehet listára kéne tenni a legjobb lépéseket, megfontolandó!
 						count_vertical_what++;				//később lehetne random választani az egyenlő súlyú lépésekből...
-						csopi.length++;						//Na ez a komment még a másikhoz készült
+						temp_group.length++;						//Na ez a komment még a másikhoz készült
 						if (count_horizontal_what==1) {
-							csopi.start_x=j;
-							csopi.start_y=i;
+							temp_group.start_x=j;
+							temp_group.start_y=i;
 							if (NotOutOfRange(j-1)) {
 								if (palya[j-1,i]==0) {
-									csopi.has_before=true;
-									csopi.before_x=j-1;
-									csopi.before_y=i;
+									temp_group.has_before=true;
+									temp_group.before_x=j-1;
+									temp_group.before_y=i;
 								}
 							}
 						}
 						if (count_vertical_what>=times) {
-							csopi.found=true;
-							csopi.end_x=j;
-							csopi.end_y=i;
-							csopi.direction="vertical";
+							temp_group.found=true;
+							temp_group.end_x=j;
+							temp_group.end_y=i;
+							temp_group.direction="vertical";
 							if (NotOutOfRange(j+1)) {
 								if (palya[j+1,i]==0) {
-									csopi.has_next=true;
-									csopi.next_x=j+1;
-									csopi.next_y=i;
-									osszes.Add(csopi);
+									temp_group.has_next=true;
+									temp_group.next_x=j+1;
+									temp_group.next_y=i;
 								} else {
-									csopi.has_next=false;
-									osszes.Add(csopi);
+									temp_group.has_next=false;
 								}
-							} else {
-								csopi.has_next=false;
-								osszes.Add(csopi);
 							}
+							osszes.Add(temp_group);
 						}
 					} else {
 						count_vertical_what=0;
+						temp_group.has_next=false;		//fontos kinullázni ezeket is, mégpedig, hogy ne szemeteljen a has_before, ha vizsgálom...hmmm
+						//temp_group.has_before=false;
 					}			
 				}
 				count_vertical_what=0;
+				temp_group.has_next=false;		//fontos kinullázni ezeket is, mégpedig, hogy ne szemeteljen a has_before
+				//temp_group.has_before=false;
 			}
+			
 			//***********átló vizsgálat**********************
+			/*
 			int temp_row,temp_col;
 			int count_left_diagonal_what=0;
 			for (int i = 0; i < sorSzam; i++) {
@@ -700,37 +728,33 @@ namespace gomoku
 					while (temp_row!=sorSzam && temp_col!=oszlopSzam) {
 						if (palya[temp_row,temp_col]==search_what) {
 							count_left_diagonal_what++;
-							csopi.length++;
+							temp_group.length++;
 							if (count_left_diagonal_what==1) {
-								csopi.start_x=temp_row;
-								csopi.start_y=temp_col;
+								temp_group.start_x=temp_row;
+								temp_group.start_y=temp_col;
 								if (NotOutOfRange(temp_row-1) && NotOutOfRange(temp_col-1)) {
 									if (palya[temp_row-1,temp_col-1]==0) {
-										csopi.has_before=true;
-										csopi.before_x=temp_row-1;
-										csopi.before_y=temp_col-1;
+										temp_group.has_before=true;
+										temp_group.before_x=temp_row-1;
+										temp_group.before_y=temp_col-1;
 									}
 								}
 							}
 							if (count_left_diagonal_what>=times) {
-								csopi.found=true;
-								csopi.end_x=temp_row;
-								csopi.end_y=temp_col;
-								csopi.direction="leftdiagonal";
+								temp_group.found=true;
+								temp_group.end_x=temp_row;
+								temp_group.end_y=temp_col;
+								temp_group.direction="leftdiagonal";
 								if (NotOutOfRange(temp_row+1) && NotOutOfRange(temp_col+1)) {
 									if (palya[temp_row+1,temp_col+1]==0) {
-										csopi.has_next=true;
-										csopi.next_x=temp_row+1;
-										csopi.next_y=temp_col+1;
-										osszes.Add(csopi);
+										temp_group.has_next=true;
+										temp_group.next_x=temp_row+1;
+										temp_group.next_y=temp_col+1;
 									} else {
-										csopi.has_next=false;
-										osszes.Add(csopi);
+										temp_group.has_next=false;
 									}
-								} else {
-									csopi.has_next=false;
-									osszes.Add(csopi);
 								}
+								osszes.Add(temp_group);
 							}
 						} else {
 							count_left_diagonal_what=0;
@@ -741,7 +765,9 @@ namespace gomoku
 					count_left_diagonal_what=0;
 				}
 			}
+			*/
 			//***********right diagonal*******************
+			/*
 			int count_right_diagonal_what=0;
 			for (int k = 0; k < sorSzam+oszlopSzam-2; k++) {
 				for (int j = 0; j <= k;  j++) {
@@ -749,68 +775,63 @@ namespace gomoku
 					if (i<sorSzam && j<oszlopSzam) {
 						if (palya[i,j]==search_what) {
 							count_right_diagonal_what++;
-							csopi.length++;
+							temp_group.length++;
 							if (count_right_diagonal_what==1) {
-								csopi.start_x=i;
-								csopi.start_y=j;
+								temp_group.start_x=i;
+								temp_group.start_y=j;
 								if (NotOutOfRange(i-1) && NotOutOfRange(j+1)) {
 									if (palya[i-1,j+1]==0) {
-										csopi.has_before=true;
-										csopi.before_x=i-1;
-										csopi.before_y=j+1;
+										temp_group.has_before=true;
+										temp_group.before_x=i-1;
+										temp_group.before_y=j+1;
 									}
 								}
 							}
 							
 							if (count_right_diagonal_what>=times) {
-								csopi.found=true;
-								csopi.end_x=i;
-								csopi.end_y=j;
-								csopi.direction="rightdiagonal";
+								temp_group.found=true;
+								temp_group.end_x=i;
+								temp_group.end_y=j;
+								temp_group.direction="rightdiagonal";
 								if (NotOutOfRange(i+1) && NotOutOfRange(j-1)) {
 									if (palya[i+1,j-1]==0) {
-										csopi.has_next=true;
-										csopi.next_x=i+1;
-										csopi.next_y=j-1;
-										//osszes.Add(csopi);
+										temp_group.has_next=true;
+										temp_group.next_x=i+1;
+										temp_group.next_y=j-1;
 									} else {
-										csopi.has_next=false;
-										//osszes.Add(csopi);		//ez jobb, ha itt marad kommentben, mert már nem látom át
+										temp_group.has_next=false;
 									}
-									osszes.Add(csopi);
-								} else {
-									csopi.has_next=false;
-									osszes.Add(csopi);
 								}
+								osszes.Add(temp_group);
 							}
 						} else {
-							count_right_diagonal_what=0;			
+							count_right_diagonal_what=0;			//ez hogy kerül ide?
 						}
 					}
 				}
 				count_right_diagonal_what=0;
 			}
+			*/
 			return osszes;
 		}
 		
 		private void checkForWinner(){
-			groupMark winning_group=new groupMark();
-			winning_group.found=false;
+			bool winning_group_found=false;
 			//itt volt a win seek...
-			winning_group=seekGroups(1,5);
-			if (winning_group.found) {
-				String winner="X"; //itt átrendezésre szorul, mert átalakítottam a keresést
+			winning_group_found=seekGroupsForWin(1,5);
+			if (winning_group_found) {
+				String winner="X"; 							//itt átrendezésre szorul, mert átalakítottam a keresést
 				MessageBox.Show(winner+" nyert!","Hurrá!");		//ezt itt hamarabb is meg lehet vizsgálni, rögtön X lépése után. Holnapra is kell valami
 				Reset_Board();
 			} else {
-				winning_group=seekGroups(2,5);
-				if (winning_group.found) {
+				winning_group_found=seekGroupsForWin(2,5);
+				if (winning_group_found) {
 					String winner="O";
 					MessageBox.Show(winner+" nyert!","Hurrá!");		//hát, elég nehéz rávenni a gépet, hogy nyerjen, holnap muszáj lesz már kicsit javítani rajta!!!
 					Reset_Board();									//azóta kicsit jobb lett
 				} 	
 			}
-			if (!winning_group.found && turn_count==sorSzam*oszlopSzam) {	//Ha a gép normálisan játszana, elvieleg erre itt nem lenne szükség (javul)
+			if (!winning_group_found && turn_count==sorSzam*oszlopSzam) {	//Ha a gép normálisan játszana, elvieleg erre itt nem lenne szükség (javul)
 				MessageBox.Show("Döntetlen!","Nesze!");
 				Reset_Board();
 			}	
