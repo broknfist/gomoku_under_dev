@@ -199,103 +199,113 @@ namespace gomoku
 			bool moved_alredy=false;
 			Random vsz=new Random();		
 			List<moves_for_best_list> best_moves=new List<moves_for_best_list>();
-			
-			//win, if possible
-			List<groupMarkAllProp> negyesek_o=new List<groupMarkAllProp>();
-			
-			negyesek_o=seekAllGroups(2,4);
-			best_moves=lookForBest(negyesek_o);
 			int index_best_moves=0;
+			//win, if possible
 			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
+			if (!moved_alredy) {
+				List<groupMarkAllProp> negyesek_o=new List<groupMarkAllProp>();
+			
+				negyesek_o=seekAllGroups(2,4);
+				best_moves=lookForBest(negyesek_o);
+				
+				if (best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}
 			}
 						
 			//***********block four enemy blocks
-			
-			List<groupMarkAllProp> negyesek_x=new List<groupMarkAllProp>();
-			
-			negyesek_x=seekAllGroups(1,4);	
-			best_moves=lookForBest(negyesek_x);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
+			if (!moved_alredy){
+				List<groupMarkAllProp> negyesek_x=new List<groupMarkAllProp>();
+				
+				negyesek_x=seekAllGroups(1,4);	
+				best_moves=lookForBest(negyesek_x);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}				
 			}
 			
 			//***********block threes
-			
-			List<groupMarkAllProp> harmasok_x=new List<groupMarkAllProp>();
-			
-			harmasok_x=seekAllGroups(1,3);
-			best_moves=lookForBest(harmasok_x);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
-			}		
+			if (!moved_alredy){
+				List<groupMarkAllProp> harmasok_x=new List<groupMarkAllProp>();
+				
+				harmasok_x=seekAllGroups(1,3);
+				best_moves=lookForBest(harmasok_x);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}					
+			}
 			
 			//**************put fourth
-			
-			List<groupMarkAllProp> harmasok_o=new List<groupMarkAllProp>();
-			
-			harmasok_o=seekAllGroups(2,3);
-			best_moves=lookForBest(harmasok_o);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
+			if (!moved_alredy){
+				List<groupMarkAllProp> harmasok_o=new List<groupMarkAllProp>();
+				
+				harmasok_o=seekAllGroups(2,3);
+				best_moves=lookForBest(harmasok_o);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}				
 			}
 			
 			//**************block 2's
-			
-			List<groupMarkAllProp> kettesek_x=new List<groupMarkAllProp>();
-			
-			kettesek_x=seekAllGroups(1,2);
-			best_moves=lookForBest(kettesek_x);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
+			if (!moved_alredy){
+				List<groupMarkAllProp> kettesek_x=new List<groupMarkAllProp>();
+				
+				kettesek_x=seekAllGroups(1,2);
+				best_moves=lookForBest(kettesek_x);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}				
 			}
-			
+	
 			//***********put third
-			
-			List<groupMarkAllProp> kettesek_o=new List<groupMarkAllProp>();
-			
-			kettesek_o=seekAllGroups(2,2);
-			best_moves=lookForBest(kettesek_o);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
-			}
-			
+			if (!moved_alredy){
+				List<groupMarkAllProp> kettesek_o=new List<groupMarkAllProp>();
+				
+				kettesek_o=seekAllGroups(2,2);
+				best_moves=lookForBest(kettesek_o);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}				
+			}			
+
 			//*******put second
-			List<groupMarkAllProp> egyesek_o=new List<groupMarkAllProp>();
-			kettesek_o=seekAllGroups(2,2);
-			best_moves=lookForBest(egyesek_o);
-			
-			if (!moved_alredy && best_moves.Count!=0) {
-				index_best_moves=vsz.Next(0,best_moves.Count);
-				ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
-				moved_alredy=true;
-				best_moves.Clear();
-			}
-			
+			if (!moved_alredy){
+				List<groupMarkAllProp> egyesek_o=new List<groupMarkAllProp>();
+				egyesek_o=seekAllGroups(2,2);
+				best_moves=lookForBest(egyesek_o);
+				
+				if (!moved_alredy && best_moves.Count!=0) {
+					index_best_moves=vsz.Next(0,best_moves.Count);
+					ButtonPressDownByKoord(best_moves[index_best_moves].x,best_moves[index_best_moves].y);
+					moved_alredy=true;
+					best_moves.Clear();
+				}
+				
+			}			
+
 			//Random:
 			if (!moved_alredy) {
 				Random_Move(player_pressed);
