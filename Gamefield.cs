@@ -166,7 +166,7 @@ namespace gomoku
 			if (is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0) {
 				notoutofrange=false;
 			}
-			//notoutofrange=(is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0)?false:true;
+			//notoutofrange=(is_it_out>=sorSzam || is_it_out<0 || is_it_out>=oszlopSzam || is_it_out<0)?false:true;	//funny
 			return notoutofrange;
 		}
 		
@@ -325,9 +325,8 @@ namespace gomoku
 			}
 			best_moves.Clear();
 			
-			//Elvileg minden jó, ha mégis gebasz van, itt keressem először!!! Mármint a seekAllGroups()-ban
 			//jobb átló X mintha rossz lenne! Nem, biztos, hogy rossz, holnap kijavítani
-			
+			//valamint néha nem ad eredményt a négyes csoportokra és egyből a hármasokra megy. Miért?
 			
 			ButtonPressDownByKoord(3,0);
 			
@@ -460,7 +459,7 @@ namespace gomoku
 		}	
 		
 		struct groupMarkAllProp{	
-			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y,length;
+			public int start_x,start_y,end_x,end_y,next_x,next_y,before_x,before_y,length;  //length not used, maybe a weight?
 			public bool found,have_next,empty_before;
 			public string direction;
 		}
@@ -472,7 +471,6 @@ namespace gomoku
 			temp_group.found=false;	//?
 			temp_group.have_next=false;
 			temp_group.empty_before=false;
-			//temp_group.length=0;
 			//*************horizontal**********Elvileg jó,tesztelve
 			
 			int count_horizontal_what=0;
