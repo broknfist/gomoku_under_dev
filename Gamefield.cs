@@ -201,6 +201,8 @@ namespace gomoku
 			List<moves_for_best_list> best_moves=new List<moves_for_best_list>();
 			
 			//win, if possible
+			//Lekezelni: o-oooo és oo-oo
+			
 			List<groupMarkAllProp> negyesek_o=new List<groupMarkAllProp>();
 			
 			negyesek_o=seekAllGroups(2,4);
@@ -215,6 +217,7 @@ namespace gomoku
 			}
 						
 			//***********block four enemy blocks
+			//blokkolni: x-xxxx és xx-xx
 			
 			List<groupMarkAllProp> negyesek_x=new List<groupMarkAllProp>();
 			
@@ -229,6 +232,10 @@ namespace gomoku
 			}
 			
 			//***********block threes
+			//Ha mindkét vége szabad, az fontosabb, mint, ha csak az egyik!
+			// -x-    xx-
+			// x-x és --x 
+			// -x-    --x
 			
 			List<groupMarkAllProp> harmasok_x=new List<groupMarkAllProp>();
 			
@@ -243,6 +250,7 @@ namespace gomoku
 			}		
 			
 			//**************put fourth
+			//a block threes támadó variációja
 			
 			List<groupMarkAllProp> harmasok_o=new List<groupMarkAllProp>();
 			
@@ -257,6 +265,7 @@ namespace gomoku
 			}
 			
 			//**************block 2's
+			//talán csak akkor fontos, ha mindkét vége szabad, ez talán megoldhat egy fenti problémát is
 			
 			List<groupMarkAllProp> kettesek_x=new List<groupMarkAllProp>();
 			
@@ -271,6 +280,7 @@ namespace gomoku
 			}
 			
 			//***********put third
+			//mindkét végén szabad kettes blokkok fontosabbak
 			
 			List<groupMarkAllProp> kettesek_o=new List<groupMarkAllProp>();
 			
@@ -285,6 +295,8 @@ namespace gomoku
 			}
 			
 			//*******put second
+			//mondjuk akkor a legjobb, ha minden irányból van szabad hely, lehetőleg egy ötös csoport kialakításához, hm...
+			
 			List<groupMarkAllProp> egyesek_o=new List<groupMarkAllProp>();
 			kettesek_o=seekAllGroups(2,2);
 			best_moves=lookForBest(egyesek_o);
