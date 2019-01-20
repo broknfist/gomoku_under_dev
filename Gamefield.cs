@@ -48,7 +48,25 @@ namespace gomoku
 			this.sorSzam=sorszam;
 			this.oszlopSzam=oszlopszam;
 			palya=new int[sorSzam,oszlopSzam];
+			mainwindow.NewGameBtn.Click+=new RoutedEventHandler(NewGameBtn_Click);
+			mainwindow.OptionsBtn.Click+=new RoutedEventHandler(OptionBtn_Click);
+			mainwindow.StatBtn.Click+=new RoutedEventHandler(StatBtn_Click);
 			Start();
+		}
+		
+		void NewGameBtn_Click(object sender, RoutedEventArgs e)
+		{
+			Reset_Board();
+		}
+		
+		void OptionBtn_Click(object sender, RoutedEventArgs e)
+		{
+			Reset_Board();
+		}
+		
+		void StatBtn_Click(object sender, RoutedEventArgs e)
+		{
+			Reset_Board();
 		}
 		
 		private void Start(){
