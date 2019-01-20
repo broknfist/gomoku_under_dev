@@ -61,12 +61,14 @@ namespace gomoku
 		
 		void OptionBtn_Click(object sender, RoutedEventArgs e)
 		{
-			Reset_Board();
+			Window2 options=new Window2();
+			options.Show();
 		}
 		
 		void StatBtn_Click(object sender, RoutedEventArgs e)
 		{
-			Reset_Board();
+			Window3 options=new Window3();
+			options.Show();
 		}
 		
 		private void Start(){

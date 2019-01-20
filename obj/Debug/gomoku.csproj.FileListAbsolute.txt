@@ -9,3 +9,7 @@ C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\
 C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\gomoku.g.resources
 C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\gomoku.exe
 C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\gomoku.pdb
+C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\Window2.baml
+C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\Window2.g.cs
+C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\Window3.baml
+C:\Users\zsolt\OneDrive\Documents\SharpDevelop Projects\gomoku\gomoku\obj\Debug\Window3.g.cs
