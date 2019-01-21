@@ -748,13 +748,23 @@ namespace gomoku
 			winning_group_found=seekGroupsForWin(1,5);
 			if (winning_group_found) {
 				String winner=MainProps.Player1Name; 							
-				MessageBox.Show(winner+" nyert!","Hurrá!");		
+				MessageBox.Show(winner+" nyert!","Hurrá!");
+				if (MainProps.stat.ContainsKey(MainProps.Player1Name)) {
+					MainProps.stat[MainProps.Player1Name]++;
+				} else {
+					MainProps.stat.Add(MainProps.Player1Name,1);
+				}
 				Reset_Board();
 			} else {
 				winning_group_found=seekGroupsForWin(2,5);
 				if (winning_group_found) {
 					String winner=MainProps.Player2Name;
-					MessageBox.Show(winner+" nyert!","Hurrá!");		
+					MessageBox.Show(winner+" nyert!","Hurrá!");
+					if (MainProps.stat.ContainsKey(MainProps.Player2Name)) {
+					MainProps.stat[MainProps.Player2Name]++;
+					} else {
+						MainProps.stat.Add(MainProps.Player2Name,1);
+					}					
 					Reset_Board();									
 				} 	
 			}

@@ -26,6 +26,7 @@ namespace gomoku
 		public Window3()
 		{
 			InitializeComponent();
+			this.adatok.ItemsSource=MainProps.stat;
 		}
 	}
 }

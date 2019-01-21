@@ -2,7 +2,11 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="gomoku" Height="600" Width="300">
-	<Grid>
-		
-	</Grid>
+	<TabControl>
+		<TabItem Header="Statisztika">
+			<Grid>
+				<DataGrid x:Name="adatok" AutoGenerateColumns="True" ColumnWidth="*"/>
+			</Grid>
+		</TabItem>
+	</TabControl>
 </Window>
