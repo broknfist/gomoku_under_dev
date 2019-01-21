@@ -26,6 +26,25 @@ namespace gomoku
 		public Window2()
 		{
 			InitializeComponent();
+			this.buttonOptionSet.Click+=new RoutedEventHandler(buttonOptionSet_Click);
+		}
+		void buttonOptionSet_Click(object sender, RoutedEventArgs e)
+		{
+			if (textboxPlayer1.Text.Length>0) {
+				MainProps.Player1Name=textboxPlayer1.Text;
+			}
+			if (textboxPlayer2.Text.Length>0) {
+				MainProps.Player2Name=textboxPlayer2.Text;
+			}
+			if (radioComputer.IsChecked==true) {
+				MainProps.CPU=true;
+			}
+			if (radioHuman.IsChecked==true) {
+				MainProps.CPU=false;
+			}
+
+
+			this.Close();
 		}
 	}
 }

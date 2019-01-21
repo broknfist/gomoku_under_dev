@@ -65,6 +65,11 @@ namespace gomoku
 			options.Show();
 		}
 		
+		void buttonOptionSet_Click(object sender, RoutedEventArgs e)
+		{
+			Reset_Board();
+		}
+		
 		void StatBtn_Click(object sender, RoutedEventArgs e)
 		{
 			Window3 options=new Window3();
@@ -105,6 +110,7 @@ namespace gomoku
 		//************	Main Event	!!!	*******************************************
 		private void cellClick(object sender,RoutedEventArgs e){
 			Button gridButton=(Button)sender;
+			
 			if (x_or_not) {
 				gridButton.IsEnabled=false;
 				palya[Grid.GetRow(gridButton),Grid.GetColumn(gridButton)]=1;
@@ -114,11 +120,23 @@ namespace gomoku
 				checkForWinner();
 				//Random_Move(gridButton);
 				//ButtonPressDownByKoord(0,turn_count/2); //Mechanical Test
-				make_move(gridButton);		//választható játékosnál: if(cpu_turn && cpu_on) {lépés}
-				checkForWinner();
+				if (MainProps.CPU) {
+					make_move(gridButton);		//választható játékosnál: if(cpu_turn && cpu_on) {lépés}
+					checkForWinner();
+				}
+				
 			}else{
- 				//Itt volt a második játékos lépése, megszűntettem, amíg a gép nem lép jól, ha az megvan, átszervezem az egészet
+ 				if (!MainProps.CPU) {
+ 					gridButton.IsEnabled=false;
+					palya[Grid.GetRow(gridButton),Grid.GetColumn(gridButton)]=2;
+					gridButton.Content="O";
+					x_or_not=true;
+					turn_count++;
+					checkForWinner();
+ 				}
 			}			
+			
+			
 			
 			//implement performclick button, ha make_a_move() visszatér egy jó lépéssel!!!
 			/*
@@ -729,13 +747,13 @@ namespace gomoku
 			//itt volt a win seek...
 			winning_group_found=seekGroupsForWin(1,5);
 			if (winning_group_found) {
-				String winner="X"; 							
+				String winner=MainProps.Player1Name; 							
 				MessageBox.Show(winner+" nyert!","Hurrá!");		
 				Reset_Board();
 			} else {
 				winning_group_found=seekGroupsForWin(2,5);
 				if (winning_group_found) {
-					String winner="O";
+					String winner=MainProps.Player2Name;
 					MessageBox.Show(winner+" nyert!","Hurrá!");		
 					Reset_Board();									
 				} 	

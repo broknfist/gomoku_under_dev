@@ -8,10 +8,71 @@
 		<Label
 			Height="27"
 			Width="104"
+			Content="Player1"
+			Margin="12,23,0,0"
+			VerticalAlignment="Top"
+			HorizontalAlignment="Left"
+			Grid.Row="0"
+			Grid.Column="0" />
+		<TextBox
+			Height="27"
+			Width="125"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,23,56,0"
+			x:Name="textboxPlayer1" />
+		<Button
+			Content="Set"
+			RenderTransformOrigin="2.7812,-3.3261"
+			Width="85"
+			Height="23"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,205,103,0"
+			x:Name="buttonOptionSet"
+			Click="buttonOptionSet_Click" />
+		<TextBox
+			Height="27"
+			Width="125"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,69,56,0"
+			x:Name="textboxPlayer2" />
+		<Label
+			Height="27"
+			Width="104"
+			Content="Player2"
 			Grid.Column="0"
 			Grid.Row="0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top"
-			Margin="12,23,0,0" />
+			Margin="12,69,0,0" />
+		<RadioButton
+			Content="Human"
+			Height="25"
+			Width="127"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,113,52,0"
+			x:Name="radioHuman" />
+		<RadioButton
+			Content="Computer"
+			Height="29"
+			Width="122"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,150,57,0"
+			IsChecked="True"
+			x:Name="radioComputer" />
 	</Grid>
 </Window>
